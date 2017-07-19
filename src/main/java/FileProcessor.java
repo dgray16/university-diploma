@@ -1,12 +1,13 @@
 
-import ch.qos.logback.core.encoder.ByteArrayUtil;
 import lombok.SneakyThrows;
+import org.apache.commons.io.FileUtils;
 
+import java.io.File;
 import java.io.RandomAccessFile;
 import java.math.BigDecimal;
-import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
+import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 
 public class FileProcessor {
@@ -57,6 +58,13 @@ public class FileProcessor {
     @SneakyThrows
     public BigDecimal getFileLength(RandomAccessFile file) {
         return BigDecimal.valueOf(file.length());
+    }
+
+    @SneakyThrows
+    public String getPlainText() {
+        return FileUtils
+                .readLines(new File("plaintext.txt"), Charset.defaultCharset()).stream()
+                .collect(Collectors.joining(" "));
     }
 
 }

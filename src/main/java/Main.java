@@ -10,22 +10,46 @@ import static java.lang.Math.log;
 
 
 /**
- *
+ * TODO
+ * 1. Get some plaintext.
+ * 2. Encrypt it with AES.
+ * 3. Calculate enropy of cipher text.
+ * 4. Fill cipher text with 0/1.
+ * 5. Calculate entropy of idea cipher.
+ * 6. Compare.
  */
 public class Main {
 
     public static final Logger LOG = LoggerFactory.getLogger(Main.class);
 
+    private static FileProcessor fileProcessor;
+
+    private static Entropy entropyCalculator;
+
     public static void main(String[] args) {
-        idealCipher();
+        fileProcessor = new FileProcessor();
+        entropyCalculator = new Entropy();
+        aes();
+    }
+
+    private static void aes() {
+        String plainText = fileProcessor.getPlainText();
+
+        /* AES block */
+        /* TODO if enough time */
+        String cipherText = "29v0r5/lm7YeAk7HR6yY3lLJQZogNuhcidaZ3kyJ5ZvN5hAuJDHCVXzqQzI0tyKjixjx6jV0Bx8+JBAu4GoG1xofy8UahS0nEGi54tahiUo=";
+        entropyCalculator.calculate(cipherText);
+
+
+        /* Ideal cipher */
     }
 
     /**
-     * Idea cipher
+     * Example
      */
     private static void idealCipher() {
         FileProcessor fileProcessor = new FileProcessor();
-        RandomAccessFile file = fileProcessor.generateFile("idea-cipher");
+        RandomAccessFile file = fileProcessor.generateFile("ideal-cipher");
         byte[] result = fileProcessor.read(file);
 
         /* Workaround to reuse stream */
