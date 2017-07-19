@@ -12,7 +12,7 @@ import java.util.Arrays;
 public class FileProcessor {
 
     /** Length of file */
-    private static final int length = 126;
+    private static final int length = 128;
 
     /**
      * {@link RandomAccessFile#length()} returns value measure in bytes!
