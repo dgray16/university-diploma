@@ -1,9 +1,12 @@
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.RandomAccessFile;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static java.lang.Math.log;
@@ -13,7 +16,7 @@ import static java.lang.Math.log;
  * TODO
  * 1. Get some plaintext.
  * 2. Encrypt it with AES.
- * 3. Calculate enropy of cipher text.
+ * 3. Calculate entropy of cipher text.
  * 4. Fill cipher text with 0/1.
  * 5. Calculate entropy of idea cipher.
  * 6. Compare.
@@ -38,10 +41,23 @@ public class Main {
         /* AES block */
         /* TODO if enough time */
         String cipherText = "29v0r5/lm7YeAk7HR6yY3lLJQZogNuhcidaZ3kyJ5ZvN5hAuJDHCVXzqQzI0tyKjixjx6jV0Bx8+JBAu4GoG1xofy8UahS0nEGi54tahiUo=";
-        entropyCalculator.calculate(cipherText);
-
+        BigDecimal h0 = entropyCalculator.calculate("AES-pure", cipherText);
 
         /* Ideal cipher */
+        List<String> letters = entropyCalculator.getCipherTextAsList(cipherText);
+        setupListOfIdeaCipher(letters);
+        BigDecimal h1 = entropyCalculator.calculate("AES-idea", letters.stream().collect(Collectors.joining(StringUtils.EMPTY)));
+
+        LOG.info("Ideal AES - AES = {} - {} = {}", h1, h0, h1.subtract(h0));
+    }
+
+    private static void setupListOfIdeaCipher(List<String> letters) {
+        for (int i = 0; i < letters.size() / 2; i++) {
+            letters.set(i, "0");
+        }
+        for (int i = letters.size() / 2; i < letters.size(); i++) {
+            letters.set(i, "1");
+        }
     }
 
     /**
