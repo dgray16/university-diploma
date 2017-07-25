@@ -15,7 +15,7 @@
         <withJansi>true</withJansi>
         <encoder>
             <!--<pattern>%-4relative [%thread] %highlight(%-5level) %logger{35} - %msg %n</pattern>-->
-            <pattern>%n%d{HH:mm:ss.SSS} [%thread] %highlight(%-5level) %logger{36} - %msg%n</pattern>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %highlight(%-5level) %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
 

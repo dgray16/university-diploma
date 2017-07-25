@@ -16,7 +16,7 @@ import static java.lang.Math.log;
 public class Entropy {
 
     public BigDecimal calculate(String cipher, String cipherText) {
-        int lenght = cipherText.getBytes().length;
+        int length = cipherText.getBytes().length;
 
         /* Alphabet */
         Set<String> alphabet = getAlphabet(cipherText);
@@ -25,13 +25,13 @@ public class Entropy {
         /* Frequency */
         List<Map<String, Integer>> frequency = getFrequency(alphabet, cipherTextList);
 
-        Double h = calculateHValue(frequency, lenght);
-        Main.LOG.info("{} H = {}", cipher, BigDecimal.valueOf(h).setScale(2, BigDecimal.ROUND_CEILING));
+        Double h = calculateHValue(frequency, length);
+        Main.LOG.info("{} ( H = {} )", cipher, BigDecimal.valueOf(h).setScale(2, BigDecimal.ROUND_CEILING));
 
         return BigDecimal.valueOf(h).setScale(2, BigDecimal.ROUND_CEILING);
     }
 
-    private Set<String> getAlphabet(String text) {
+    public Set<String> getAlphabet(String text) {
         Set<String> found = new HashSet<>();
 
         Arrays.stream(text.split(StringUtils.EMPTY)).forEach(letter -> {

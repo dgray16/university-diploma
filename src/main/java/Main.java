@@ -2,15 +2,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.RandomAccessFile;
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.List;
-import java.util.function.Supplier;
+import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
-import static java.lang.Math.log;
-
 
 /**
  * TODO
@@ -32,57 +28,34 @@ public class Main {
     public static void main(String[] args) {
         fileProcessor = new FileProcessor();
         entropyCalculator = new Entropy();
-        aes();
+
+        Arrays.stream(Cipher.values()).forEach(cipher -> {
+            String cipherText = cipher.getCipherText();
+            BigDecimal h0 = entropyCalculator.calculate(cipher.getPure(), cipherText);
+
+            List<String> letters = entropyCalculator.getCipherTextAsList(cipherText);
+            setupListOfIdeaCipher(letters, entropyCalculator.getAlphabet(cipherText));
+            BigDecimal h1 = entropyCalculator.calculate(cipher.getIdeal(), letters.stream().collect(Collectors.joining(StringUtils.EMPTY)));
+
+            LOG.info("{} - {} = {} - {} = {}", cipher.getIdeal(), cipher.getPure(), h1, h0, h1.subtract(h0));
+            System.out.println("\n");
+        });
     }
 
-    private static void aes() {
-        String plainText = fileProcessor.getPlainText();
+    private static void setupListOfIdeaCipher(List<String> letters, Set<String> alphabet) {
+        int lettersSize = letters.size();
+        int alphabetSize = alphabet.size();
+        letters.clear();
 
-        /* AES block */
-        /* TODO if enough time */
-        String cipherText = "29v0r5/lm7YeAk7HR6yY3lLJQZogNuhcidaZ3kyJ5ZvN5hAuJDHCVXzqQzI0tyKjixjx6jV0Bx8+JBAu4GoG1xofy8UahS0nEGi54tahiUo=";
-        BigDecimal h0 = entropyCalculator.calculate("AES-pure", cipherText);
-
-        /* Ideal cipher */
-        List<String> letters = entropyCalculator.getCipherTextAsList(cipherText);
-        setupListOfIdeaCipher(letters);
-        BigDecimal h1 = entropyCalculator.calculate("AES-idea", letters.stream().collect(Collectors.joining(StringUtils.EMPTY)));
-
-        LOG.info("Ideal AES - AES = {} - {} = {}", h1, h0, h1.subtract(h0));
-    }
-
-    private static void setupListOfIdeaCipher(List<String> letters) {
-        for (int i = 0; i < letters.size() / 2; i++) {
-            letters.set(i, "0");
-        }
-        for (int i = letters.size() / 2; i < letters.size(); i++) {
-            letters.set(i, "1");
-        }
-    }
-
-    /**
-     * Example
-     */
-    private static void idealCipher() {
-        FileProcessor fileProcessor = new FileProcessor();
-        RandomAccessFile file = fileProcessor.generateFile("ideal-cipher");
-        byte[] result = fileProcessor.read(file);
-
-        /* Workaround to reuse stream */
-        Supplier<IntStream> intStream = () -> IntStream.range(0, result.length).map(i -> result[i]);
-
-        BigDecimal zerosCount = BigDecimal.valueOf(intStream.get().filter(value -> value == 0).count());
-        BigDecimal unitsCount = BigDecimal.valueOf(intStream.get().filter(value -> value == 1).count());
-        BigDecimal fileLenght = fileProcessor.getFileLength(file);
-
-        double p1 = zerosCount.divide(fileLenght).doubleValue();
-        LOG.info("P1 = zeroCount / length = {} / {} = {}", zerosCount, fileLenght, p1);
-
-        double p2 = unitsCount.divide(fileLenght).doubleValue();
-        LOG.info("P2 = unitCount / length = {} / {} = {}", unitsCount, fileLenght, p2);
-
-        Double h0 = - (p1 * ( log(p1) / log(2) ) + p2 * ( log(p2) / log(2) ));
-        LOG.info("H0 = -(p1 * log2p1 + p2 * log2p2) = {}", h0);
+        alphabet.forEach(letter -> {
+            if (lettersSize > alphabetSize) {
+                if (alphabetSize * 2 > lettersSize) {
+                    for (int i = 0; i < 2; i++) {
+                        letters.add(letter);
+                    }
+                }
+            }
+        });
     }
 
 }
