@@ -1,0 +1,10 @@
+Text: If you cannot explain it simply, you cannot understand it well enough.
+Key: hello
+
+AES:
+    Key-size: 128 bit
+    Mode: ?
+
+DES:
+    Key-size: Default?
+    Mode: CBC
