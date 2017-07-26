@@ -9,12 +9,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * TODO
+ * AES Workflow:
  * 1. Get some plaintext.
  * 2. Encrypt it with AES.
  * 3. Calculate entropy of cipher text.
- * 4. Fill cipher text with 0/1.
- * 5. Calculate entropy of idea cipher.
+ * 4. Fill cipher text with alphabet letters uniformly.
+ * 5. Calculate entropy of ideal cipher.
  * 6. Compare.
  */
 public class Main {
@@ -49,7 +49,7 @@ public class Main {
 
         alphabet.forEach(letter -> {
             if (lettersSize > alphabetSize) {
-                if (alphabetSize * 2 > lettersSize) {
+                if (alphabetSize * 2 >= lettersSize) {
                     for (int i = 0; i < 2; i++) {
                         letters.add(letter);
                     }

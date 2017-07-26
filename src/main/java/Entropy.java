@@ -26,9 +26,9 @@ public class Entropy {
         List<Map<String, Integer>> frequency = getFrequency(alphabet, cipherTextList);
 
         Double h = calculateHValue(frequency, length);
-        Main.LOG.info("{} ( H = {} )", cipher, BigDecimal.valueOf(h).setScale(2, BigDecimal.ROUND_CEILING));
+        Main.LOG.info("{} ( H = {} )", cipher, BigDecimal.valueOf(h).setScale(6, BigDecimal.ROUND_CEILING));
 
-        return BigDecimal.valueOf(h).setScale(2, BigDecimal.ROUND_CEILING);
+        return BigDecimal.valueOf(h).setScale(6, BigDecimal.ROUND_CEILING);
     }
 
     public Set<String> getAlphabet(String text) {
