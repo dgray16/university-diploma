@@ -49,13 +49,28 @@ public class Main {
 
         alphabet.forEach(letter -> {
             if (lettersSize > alphabetSize) {
-                if (alphabetSize * 2 >= lettersSize) {
+                int iterations = findIterations(alphabetSize, lettersSize);
+
+                if (alphabetSize * iterations >= lettersSize) {
                     for (int i = 0; i < 2; i++) {
                         letters.add(letter);
                     }
                 }
             }
         });
+    }
+
+    private static int findIterations(int alphabetSize, int lettersSize) {
+        int value = 1;
+        boolean shouldWork = true;
+
+        while (shouldWork) {
+            if ( alphabetSize * value >= lettersSize ) {
+                shouldWork = false;
+            }
+            value = shouldWork ? value + 1 : value;
+        }
+        return value;
     }
 
 }

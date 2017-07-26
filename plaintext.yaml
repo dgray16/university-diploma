@@ -14,3 +14,27 @@ DES:
 Blowfish:
     Key-size: ?
     Mode: CBC
+
+Cast-128:
+    Key-size: ?
+    Mode: CBC
+
+GOST-28147:
+    Key-size: ?
+    Mode: CBC
+
+Loki97:
+    Key-size: ?
+    Mode: CBC
+
+RC2:
+    Key-size: ?
+    Mode: CBC
+
+Serpent:
+    Key-size: ?
+    Mode: CBC
+
+XTEA:
+    Key-size: 128 bit
+    Mode: CBC
