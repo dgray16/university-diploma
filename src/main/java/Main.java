@@ -1,12 +1,14 @@
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.math.BigDecimal;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.joining;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 /**
  * AES Workflow:
@@ -29,17 +31,34 @@ public class Main {
         fileProcessor = new FileProcessor();
         entropyCalculator = new Entropy();
 
-        Arrays.stream(Cipher.values()).forEach(cipher -> {
+        /*Arrays.stream(Cipher.values()).forEach(cipher -> {
             String cipherText = cipher.getCipherText();
             BigDecimal h0 = entropyCalculator.calculate(cipher.getPure(), cipherText);
 
             List<String> letters = entropyCalculator.getCipherTextAsList(cipherText);
             setupListOfIdeaCipher(letters, entropyCalculator.getAlphabet(cipherText));
-            BigDecimal h1 = entropyCalculator.calculate(cipher.getIdeal(), letters.stream().collect(Collectors.joining(StringUtils.EMPTY)));
+            BigDecimal h1 = entropyCalculator.calculate(cipher.getIdeal(), letters.stream().collect(joining(EMPTY)));
 
             LOG.info("{} - {} = {} - {} = {}", cipher.getIdeal(), cipher.getPure(), h1, h0, h1.subtract(h0));
             System.out.println("\n");
-        });
+        });*/
+
+            List<File> files = fileProcessor.getTextFiles("/ciphertext-files/des/");
+
+            files.forEach(file -> {
+                String cipherText = fileProcessor.getText(file);
+                LOG.info("File size: {}", FileUtils.byteCountToDisplaySize(cipherText.getBytes().length));
+                Cipher cipher = Cipher.DES;
+
+                BigDecimal h0 = entropyCalculator.calculate(cipher.getPure(), cipherText);
+
+                List<String> letters = entropyCalculator.getCipherTextAsList(cipherText);
+                setupListOfIdeaCipher(letters, entropyCalculator.getAlphabet(cipherText));
+                BigDecimal h1 = entropyCalculator.calculate(cipher.getIdeal(), letters.stream().collect(joining(EMPTY)));
+
+                LOG.info("{} - {} = {} - {} = {}", cipher.getIdeal(), cipher.getPure(), h1, h0, h1.subtract(h0));
+                System.out.println("\n");
+            });
     }
 
     private static void setupListOfIdeaCipher(List<String> letters, Set<String> alphabet) {

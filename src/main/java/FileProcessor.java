@@ -1,24 +1,29 @@
 
 import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.RandomAccessFile;
 import java.math.BigDecimal;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 
 public class FileProcessor {
 
     /** Length of file */
-    private static final int length = 128;
+    /*private static final int length = 128;
 
-    /**
+    *//**
      * {@link RandomAccessFile#length()} returns value measure in bytes!
      * 126 bytes == 1008 bits
-     */
+     *//*
     @SneakyThrows
     public RandomAccessFile generateFile(String filename) {
         RandomAccessFile randomAccessFile = new RandomAccessFile(filename, "rw");
@@ -65,6 +70,18 @@ public class FileProcessor {
         return FileUtils
                 .readLines(new File("plaintext.txt"), Charset.defaultCharset()).stream()
                 .collect(Collectors.joining(" "));
+    }*/
+
+    @SneakyThrows
+    public List<File> getTextFiles(String path) {
+        File directory = new File(Main.class.getResource(path).toURI());
+        return Arrays.asList(directory.listFiles());
+    }
+
+    @SneakyThrows
+    public String getText(File file) {
+        List<String> lines = Files.readAllLines(file.toPath());
+        return lines.parallelStream().map(String::trim).collect(Collectors.joining(" "));
     }
 
 }

@@ -1,6 +1,11 @@
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+/**
+ * TODO:
+ * 1) Get rid of cipherText when files will be ready
+ * 2) Add ciphertext paths as third param (instead of cipherText)
+ */
 @AllArgsConstructor
 @Getter
 public enum Cipher {
