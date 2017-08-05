@@ -34,7 +34,7 @@ public class Entropy {
     public Set<String> getAlphabet(String text) {
         Set<String> found = new HashSet<>();
 
-        Arrays.stream(text.split(StringUtils.EMPTY)).forEach(letter -> {
+        Arrays.stream(text.split(StringUtils.EMPTY)).parallel().forEach(letter -> {
             if ( !found.contains(letter) ) {
                 found.add(letter);
             }
@@ -54,9 +54,9 @@ public class Entropy {
     private List<Map<String, Integer>> getFrequency(Set<String> alphabet, List<String> cipherText) {
         /* Generate stub frequency */
         List<Map<String, Integer>> frequency = new ArrayList<>();
-        alphabet.forEach(letter -> frequency.add(createMap(letter, 0)));
+        alphabet.parallelStream().forEach(letter -> frequency.add(createMap(letter, 0)));
 
-        cipherText.forEach(letter -> frequency.forEach(map -> {
+        cipherText.parallelStream().forEach(letter -> frequency.parallelStream().forEach(map -> {
             Map.Entry entry = map.entrySet().iterator().next();
             if ( letter.equals(entry.getKey()) ) {
                 map.put(letter, (Integer) entry.getValue() + 1);
@@ -89,7 +89,7 @@ public class Entropy {
 
     private List<Double> getPList(List<Map<String, Integer>> list, Integer length) {
         List<Double> pValues = new ArrayList<>();
-        list.forEach(map -> {
+        list.parallelStream().forEach(map -> {
             Map.Entry entry = map.entrySet().iterator().next();
             pValues.add(calculatePValue((Integer) entry.getValue(), length));
         });

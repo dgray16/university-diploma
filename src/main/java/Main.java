@@ -42,23 +42,23 @@ public class Main {
             LOG.info("{} - {} = {} - {} = {}", cipher.getIdeal(), cipher.getPure(), h1, h0, h1.subtract(h0));
             System.out.println("\n");
         });*/
+        /* TODO check file #3 */
+        Cipher cipher = Cipher.DES;
+        List<File> files = fileProcessor.getTextFiles(cipher.getPath());
 
-            List<File> files = fileProcessor.getTextFiles("/ciphertext-files/des/");
+        files.forEach(file -> {
+            String cipherText = fileProcessor.getText(file);
+            LOG.info("File size: {}", FileUtils.byteCountToDisplaySize(cipherText.getBytes().length));
 
-            files.forEach(file -> {
-                String cipherText = fileProcessor.getText(file);
-                LOG.info("File size: {}", FileUtils.byteCountToDisplaySize(cipherText.getBytes().length));
-                Cipher cipher = Cipher.DES;
+            BigDecimal h0 = entropyCalculator.calculate(cipher.getPure(), cipherText);
 
-                BigDecimal h0 = entropyCalculator.calculate(cipher.getPure(), cipherText);
+            List<String> letters = entropyCalculator.getCipherTextAsList(cipherText);
+            setupListOfIdeaCipher(letters, entropyCalculator.getAlphabet(cipherText));
+            BigDecimal h1 = entropyCalculator.calculate(cipher.getIdeal(), letters.parallelStream().collect(joining(EMPTY)));
 
-                List<String> letters = entropyCalculator.getCipherTextAsList(cipherText);
-                setupListOfIdeaCipher(letters, entropyCalculator.getAlphabet(cipherText));
-                BigDecimal h1 = entropyCalculator.calculate(cipher.getIdeal(), letters.stream().collect(joining(EMPTY)));
-
-                LOG.info("{} - {} = {} - {} = {}", cipher.getIdeal(), cipher.getPure(), h1, h0, h1.subtract(h0));
-                System.out.println("\n");
-            });
+            LOG.info("{} - {} = {} - {} = {}", cipher.getIdeal(), cipher.getPure(), h1, h0, h1.subtract(h0));
+            System.out.println("\n");
+        });
     }
 
     private static void setupListOfIdeaCipher(List<String> letters, Set<String> alphabet) {
@@ -66,11 +66,11 @@ public class Main {
         int alphabetSize = alphabet.size();
         letters.clear();
 
-        alphabet.forEach(letter -> {
-            if (lettersSize > alphabetSize) {
+        alphabet.parallelStream().forEach(letter -> {
+            if ( lettersSize > alphabetSize ) {
                 int iterations = findIterations(alphabetSize, lettersSize);
 
-                if (alphabetSize * iterations >= lettersSize) {
+                if ( alphabetSize * iterations >= lettersSize ) {
                     for (int i = 0; i < 2; i++) {
                         letters.add(letter);
                     }
