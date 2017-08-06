@@ -31,18 +31,6 @@ public class Main {
         fileProcessor = new FileProcessor();
         entropyCalculator = new Entropy();
 
-        /*Arrays.stream(Cipher.values()).forEach(cipher -> {
-            String cipherText = cipher.getCipherText();
-            BigDecimal h0 = entropyCalculator.calculate(cipher.getPure(), cipherText);
-
-            List<String> letters = entropyCalculator.getCipherTextAsList(cipherText);
-            setupListOfIdeaCipher(letters, entropyCalculator.getAlphabet(cipherText));
-            BigDecimal h1 = entropyCalculator.calculate(cipher.getIdeal(), letters.stream().collect(joining(EMPTY)));
-
-            LOG.info("{} - {} = {} - {} = {}", cipher.getIdeal(), cipher.getPure(), h1, h0, h1.subtract(h0));
-            System.out.println("\n");
-        });*/
-        /* TODO check file #3 */
         Cipher cipher = Cipher.DES;
         List<File> files = fileProcessor.getTextFiles(cipher.getPath());
 
