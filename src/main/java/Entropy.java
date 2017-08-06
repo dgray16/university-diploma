@@ -42,6 +42,10 @@ public class Entropy {
         return found;
     }
 
+    /**
+     * Returns list of all letters found in text.
+     * Used to calculate frequency of letters.
+     */
     public List<String> getCipherTextAsList(String text) {
         List<String> found = new ArrayList<>();
         found.addAll(Arrays.asList(text.split(StringUtils.EMPTY)));
@@ -72,6 +76,7 @@ public class Entropy {
         return map;
     }
 
+    /* TODO make optimization for same numbers in pValues */
     private Double calculateHValue(List<Map<String, Integer>> list, Integer textLength) {
         List<Double> pValues = getPList(list, textLength);
         Double result = 0D;
@@ -81,6 +86,10 @@ public class Entropy {
         }
 
         return -result;
+        /* 12MB file - (result: -0.09375, pValue: 0.015625, log: -6.0000, pValues: 64) */
+        /* 9MB  file - (result: -0.09375, pValue: 0.015625, log: -6.0000, pValues: 64) */
+        /* 2MB  file - (result: -0.09375, pValue: 0.015625, log: -6.0000, pValues: 64) */
+        /* 1MB  file - (result: -0.09265, pValue: 0.015384, log: -6.0223, pValues: 65) */
     }
 
     private Double calculatePValue(Integer value, Integer length) {

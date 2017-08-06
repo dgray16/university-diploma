@@ -34,6 +34,17 @@ public class FileProcessor {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Method returns selected file by filename
+     */
+    @SneakyThrows
+    public List<File> getTextFilesWithName(String path, Integer number) {
+        File directory = new File(Main.class.getResource(path).toURI());
+        return Arrays.stream(directory.listFiles())
+                .filter(file -> parseInt(file.getName().split(".txt")[0]) == number)
+                .collect(Collectors.toList());
+    }
+
     @SneakyThrows
     public String getText(File file) {
         List<String> lines = Files.readAllLines(file.toPath());
