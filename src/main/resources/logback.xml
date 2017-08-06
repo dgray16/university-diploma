@@ -2,6 +2,7 @@
 <configuration>
 
     <!-- File appender -->
+    <!--
     <appender name="fileAppender" class="ch.qos.logback.core.FileAppender">
         <file>/Users/a1/Documents/CHNU/Entropy/App/logs/main-log.log</file>
         <append>true</append>
@@ -9,6 +10,7 @@
             <pattern>%d [%thread] %-5level %logger{35} - %msg%n</pattern>
         </encoder>
     </appender>
+    -->
 
     <!-- Console appender -->
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
