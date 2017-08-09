@@ -1,7 +1,12 @@
+import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import utils.ByteConverterUtils;
+import utils.EncryptionHelper;
 
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
 import java.io.File;
 import java.math.BigDecimal;
 import java.util.List;
@@ -84,21 +89,27 @@ public class Main {
 
     public static final Logger LOG = LoggerFactory.getLogger(Main.class);
 
-    private static FileProcessor fileProcessor;
+    private static final FileProcessor fileProcessor = new FileProcessor();
 
-    private static Entropy entropyCalculator;
+    private static final Entropy entropyCalculator = new Entropy();
 
 
     public static void main(String[] args) {
-        fileProcessor = new FileProcessor();
-        entropyCalculator = new Entropy();
+        /*unTextTest();*/
 
+        runAudioTest();
+
+
+
+    }
+
+    private static void runTextTest() {
         Cipher cipher = Cipher.DES;
 
         /* TODO there is strange workflow with 2, 8, 10 MB files? */
         /*List<File> files = fileProcessor.getTextFilesWithName(cipher.getPath(), 10);*/
 
-        List<File> files = fileProcessor.getTextFiles(cipher.getPath());
+        List<File> files = fileProcessor.getFiles(cipher.getPath().concat("text"));
 
         files.forEach(file -> {
             String cipherText = fileProcessor.getText(file);
@@ -113,6 +124,16 @@ public class Main {
             LOG.info("{} - {} = {} - {} = {}", cipher.getIdeal(), cipher.getPure(), h1, h0, h1.subtract(h0));
             System.out.println("\n");
         });
+    }
+
+    @SneakyThrows
+    private static void runAudioTest() {
+        File file = fileProcessor.getFile("/raw/audio/1.mp3");
+        AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(file);
+        byte[] bytes = ByteConverterUtils.convertAudioToBytes(audioInputStream);
+        audioInputStream.close();
+        String value = EncryptionHelper.des("hello", bytes);
+        System.out.println("");
     }
 
     private static void setupListOfIdealCipher(List<String> letters, Set<String> alphabet) {

@@ -23,7 +23,7 @@ public class FileProcessor {
      * Method returns list of ordered files by number of file in name
      */
     @SneakyThrows
-    public List<File> getTextFiles(String path) {
+    public List<File> getFiles(String path) {
         File directory = new File(Main.class.getResource(path).toURI());
         return Arrays.stream(directory.listFiles())
                 .sorted((obj1, obj2) -> {
@@ -32,6 +32,11 @@ public class FileProcessor {
                     return value1.compareTo(value2);
                 })
                 .collect(Collectors.toList());
+    }
+
+    @SneakyThrows
+    public File getFile(String path) {
+        return new File(Main.class.getResource(path).toURI());
     }
 
     /**

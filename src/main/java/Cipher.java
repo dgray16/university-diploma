@@ -11,7 +11,7 @@ import lombok.Getter;
 public enum Cipher {
 
     AES("AES-pure", "AES-ideal", "29v0r5/lm7YeAk7HR6yY3lLJQZogNuhcidaZ3kyJ5ZvN5hAuJDHCVXzqQzI0tyKjixjx6jV0Bx8+JBAu4GoG1xofy8UahS0nEGi54tahiUo="),
-    DES("DES-pure", "DES-ideal", "/ciphertext-files/des/"),
+    DES("DES-pure", "DES-ideal", "/encrypted/des/"),
     BLOWFISH("Blowfish-pure", "Blowfish-ideal", "jnSwcgZZhm70cUFR+eQ9oW9b81xEVzsvUeJHyWmg7wEZk6phvdixej1d2Zt71cZSZVjj6XeAN8ipCCavkFLunlmCctqhkVuj"),
     CAST_128("Cast-128-pure", "Cast-128-deal", "5gR7waZApZO+fyDzoz3UmqhZMXVW1v0G4K/7BpUtht1nYDACL2wk4UILVwk9RaAMdvm/lW5I9oADdEzeJAiNa9hL0oKC7JFl"),
     GOST_28147("GOST-28147-pure", "GOST-28147-ideal", "py/xwrnJW00cw89qWpUaxfAKjiQIT6pKxklL2NPzlsKbfZHIj19uLRfVERhpd5sBnIeHJ09xgxtS9VhOOuZjJkqGmlDuNpqa"),
