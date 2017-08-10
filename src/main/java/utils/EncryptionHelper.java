@@ -20,6 +20,7 @@ public class EncryptionHelper {
     @SneakyThrows
     public static String des(String key, byte[] plainText) {
         KeyGenerator keyGenerator = KeyGenerator.getInstance("DES");
+        /* TODO so, how other services use 5 bytes key? */
         SecretKey secretKey = new SecretKeySpec(key.getBytes(), "DES");
 
         Cipher desCipher = Cipher.getInstance("DES/CBC/PKCS5Padding");

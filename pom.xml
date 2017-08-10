@@ -8,6 +8,14 @@
     <artifactId>entropy</artifactId>
     <version>0.1</version>
 
+    <repositories>
+        <repository>
+            <id>dcm4che</id>
+            <name>DCM4CHE repo</name>
+            <url>http://www.dcm4che.org/maven2/</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -46,12 +54,16 @@
             <version>3.6</version>
         </dependency>
 
-        <!-- TODO try to get audioInputStream with this library -->
         <dependency>
-            <groupId>com.googlecode.soundlibs</groupId>
+            <groupId>javazoom</groupId>
             <artifactId>jlayer</artifactId>
-            <version>1.0.1.4</version>
+            <version>1.0.1</version>
         </dependency>
+
+        <!--
+        I have dependency mp3spi, but I cannot download it via pom dependency.
+        I downloaded it via IDE.
+        -->
 
     </dependencies>
 

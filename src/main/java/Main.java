@@ -1,5 +1,10 @@
+import javafx.scene.media.Media;
+import javazoom.jl.decoder.Bitstream;
+import javazoom.jl.player.Player;
+import javazoom.spi.mpeg.sampled.file.MpegAudioFileReader;
 import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.ByteConverterUtils;
@@ -7,10 +12,14 @@ import utils.EncryptionHelper;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Set;
+
+
 
 import static java.util.stream.Collectors.joining;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
@@ -128,10 +137,14 @@ public class Main {
 
     @SneakyThrows
     private static void runAudioTest() {
+        MpegAudioFileReader media = new MpegAudioFileReader();
+
         File file = fileProcessor.getFile("/raw/audio/1.mp3");
-        AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(file);
-        byte[] bytes = ByteConverterUtils.convertAudioToBytes(audioInputStream);
+        AudioInputStream audioInputStream = media.getAudioInputStream(file);
+
+        byte[] bytes = IOUtils.toByteArray(audioInputStream);
         audioInputStream.close();
+
         String value = EncryptionHelper.des("hello", bytes);
         System.out.println("");
     }
