@@ -7,9 +7,9 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import utils.ByteConverterUtils;
 import utils.EncryptionHelper;
 
+import javax.crypto.KeyGenerator;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import java.io.BufferedInputStream;
@@ -139,13 +139,17 @@ public class Main {
     private static void runAudioTest() {
         MpegAudioFileReader media = new MpegAudioFileReader();
 
-        File file = fileProcessor.getFile("/raw/audio/1.mp3");
+        File file = fileProcessor.getFile("/raw/audio/5.mp3");
+        /* FIXME seems like 3-rd party library to read AudioInputStream is redundant, simple FileInputStream returns same byte array */
         AudioInputStream audioInputStream = media.getAudioInputStream(file);
 
         byte[] bytes = IOUtils.toByteArray(audioInputStream);
         audioInputStream.close();
 
-        String value = EncryptionHelper.des("hello", bytes);
+        KeyGenerator keyGenerator = KeyGenerator.getInstance("DES");
+        byte[] generatedKey = keyGenerator.generateKey().getEncoded();
+        String value = EncryptionHelper.des(generatedKey, bytes);
+
         System.out.println("");
     }
 

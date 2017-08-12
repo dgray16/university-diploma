@@ -18,10 +18,8 @@ import java.util.Base64;
 public class EncryptionHelper {
 
     @SneakyThrows
-    public static String des(String key, byte[] plainText) {
-        KeyGenerator keyGenerator = KeyGenerator.getInstance("DES");
-        /* TODO so, how other services use 5 bytes key? */
-        SecretKey secretKey = new SecretKeySpec(key.getBytes(), "DES");
+    public static String des(byte[] key, byte[] plainText) {
+        SecretKey secretKey = new SecretKeySpec(key, "DES");
 
         Cipher desCipher = Cipher.getInstance("DES/CBC/PKCS5Padding");
         desCipher.init(Cipher.ENCRYPT_MODE, secretKey);
