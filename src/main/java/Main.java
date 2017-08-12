@@ -1,7 +1,3 @@
-import javafx.scene.media.Media;
-import javazoom.jl.decoder.Bitstream;
-import javazoom.jl.player.Player;
-import javazoom.spi.mpeg.sampled.file.MpegAudioFileReader;
 import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -10,9 +6,6 @@ import org.slf4j.LoggerFactory;
 import utils.EncryptionHelper;
 
 import javax.crypto.KeyGenerator;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.math.BigDecimal;
@@ -33,7 +26,7 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
  * 5. Calculate entropy of ideal cipher.
  * 6. Compare.
  *
- Test data:
+ Test text data:
 
  20:56:13.832 [main] INFO  Main - File size: 96 bytes
  20:56:13.861 [main] INFO  Main - DES-pure ( H = 5.514192 )
@@ -104,24 +97,22 @@ public class Main {
 
 
     public static void main(String[] args) {
-        /*unTextTest();*/
-
+        /*runTextTest();*/
         runAudioTest();
-
-
-
     }
 
     private static void runTextTest() {
         Cipher cipher = Cipher.DES;
+        FileType fileType = FileType.TEXT;
 
         /* TODO there is strange workflow with 2, 8, 10 MB files? */
         /*List<File> files = fileProcessor.getTextFilesWithName(cipher.getPath(), 10);*/
 
-        List<File> files = fileProcessor.getFiles(cipher.getPath().concat("text"));
+        List<File> files = fileProcessor.getFiles(cipher.getPath().concat(fileType.getType()));
 
         files.forEach(file -> {
             String cipherText = fileProcessor.getText(file);
+            LOG.info("Type: {}", fileType.getType());
             LOG.info("File size: {}", FileUtils.byteCountToDisplaySize(cipherText.getBytes().length));
 
             BigDecimal h0 = entropyCalculator.calculate(cipher.getPure(), cipherText);
@@ -137,20 +128,24 @@ public class Main {
 
     @SneakyThrows
     private static void runAudioTest() {
-        MpegAudioFileReader media = new MpegAudioFileReader();
+        Cipher cipher = Cipher.DES;
+        FileType fileType = FileType.AUDIO;
+        List<File> files = fileProcessor.getFiles(cipher.getPath().concat(fileType.getType()));
 
-        File file = fileProcessor.getFile("/raw/audio/5.mp3");
-        /* FIXME seems like 3-rd party library to read AudioInputStream is redundant, simple FileInputStream returns same byte array */
-        AudioInputStream audioInputStream = media.getAudioInputStream(file);
+        files.forEach(file -> {
+            String cipherText = fileProcessor.getText(file);
+            LOG.info("Type: {}", fileType.getType());
+            LOG.info("File size: {}", FileUtils.byteCountToDisplaySize(cipherText.getBytes().length));
 
-        byte[] bytes = IOUtils.toByteArray(audioInputStream);
-        audioInputStream.close();
+            BigDecimal h0 = entropyCalculator.calculate(cipher.getPure(), cipherText);
 
-        KeyGenerator keyGenerator = KeyGenerator.getInstance("DES");
-        byte[] generatedKey = keyGenerator.generateKey().getEncoded();
-        String value = EncryptionHelper.des(generatedKey, bytes);
+            List<String> letters = entropyCalculator.getCipherTextAsList(cipherText);
+            setupListOfIdealCipher(letters, entropyCalculator.getAlphabet(cipherText));
+            BigDecimal h1 = entropyCalculator.calculate(cipher.getIdeal(), letters.parallelStream().collect(joining(EMPTY)));
 
-        System.out.println("");
+            LOG.info("{} - {} = {} - {} = {}", cipher.getIdeal(), cipher.getPure(), h1, h0, h1.subtract(h0));
+            System.out.println("\n");
+        });
     }
 
     private static void setupListOfIdealCipher(List<String> letters, Set<String> alphabet) {
@@ -182,6 +177,19 @@ public class Main {
             value = shouldWork ? value + 1 : value;
         }
         return value;
+    }
+
+    @SneakyThrows
+    private static void encrypt() {
+        File file = fileProcessor.getFile("/raw/audio/7.mp3");
+        FileInputStream fileInputStream = new FileInputStream(file);
+        byte[] bytes = IOUtils.toByteArray(fileInputStream);
+        fileInputStream.close();
+
+        KeyGenerator keyGenerator = KeyGenerator.getInstance("DES");
+        byte[] generatedKey = keyGenerator.generateKey().getEncoded();
+        String value = EncryptionHelper.des(generatedKey, bytes);
+        System.out.println();
     }
 
 }

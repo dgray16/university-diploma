@@ -54,17 +54,6 @@
             <version>3.6</version>
         </dependency>
 
-        <dependency>
-            <groupId>javazoom</groupId>
-            <artifactId>jlayer</artifactId>
-            <version>1.0.1</version>
-        </dependency>
-
-        <!--
-        I have dependency mp3spi, but I cannot download it via pom dependency.
-        I downloaded it via IDE.
-        -->
-
     </dependencies>
 
     <build>
