@@ -98,7 +98,8 @@ public class Main {
 
     public static void main(String[] args) {
         /*runTextTest();*/
-        runAudioTest();
+        /*runAudioTest();*/
+        runVideoTest();
     }
 
     private static void runTextTest() {
@@ -126,7 +127,6 @@ public class Main {
         });
     }
 
-    @SneakyThrows
     private static void runAudioTest() {
         Cipher cipher = Cipher.DES;
         FileType fileType = FileType.AUDIO;
@@ -146,6 +146,10 @@ public class Main {
             LOG.info("{} - {} = {} - {} = {}", cipher.getIdeal(), cipher.getPure(), h1, h0, h1.subtract(h0));
             System.out.println("\n");
         });
+    }
+
+    private static void runVideoTest() {
+        encrypt();
     }
 
     private static void setupListOfIdealCipher(List<String> letters, Set<String> alphabet) {
@@ -181,7 +185,7 @@ public class Main {
 
     @SneakyThrows
     private static void encrypt() {
-        File file = fileProcessor.getFile("/raw/audio/7.mp3");
+        File file = fileProcessor.getFile("/raw/video/1.3gp");
         FileInputStream fileInputStream = new FileInputStream(file);
         byte[] bytes = IOUtils.toByteArray(fileInputStream);
         fileInputStream.close();
