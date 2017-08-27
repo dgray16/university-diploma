@@ -6,7 +6,8 @@ import lombok.Getter;
 public enum FileType {
 
     TEXT("text"),
-    AUDIO("audio");
+    AUDIO("audio"),
+    VIDEO("video");
 
     private String type;
 

@@ -149,7 +149,24 @@ public class Main {
     }
 
     private static void runVideoTest() {
-        encrypt();
+        Cipher cipher = Cipher.DES;
+        FileType fileType = FileType.VIDEO;
+        List<File> files = fileProcessor.getFiles(cipher.getPath().concat(fileType.getType()));
+
+        files.forEach(file -> {
+            String cipherText = fileProcessor.getText(file);
+            LOG.info("Type: {}", fileType.getType());
+            LOG.info("File size: {}", FileUtils.byteCountToDisplaySize(cipherText.getBytes().length));
+
+            BigDecimal h0 = entropyCalculator.calculate(cipher.getPure(), cipherText);
+
+            List<String> letters = entropyCalculator.getCipherTextAsList(cipherText);
+            setupListOfIdealCipher(letters, entropyCalculator.getAlphabet(cipherText));
+            BigDecimal h1 = entropyCalculator.calculate(cipher.getIdeal(), letters.parallelStream().collect(joining(EMPTY)));
+
+            LOG.info("{} - {} = {} - {} = {}", cipher.getIdeal(), cipher.getPure(), h1, h0, h1.subtract(h0));
+            System.out.println("\n");
+        });
     }
 
     private static void setupListOfIdealCipher(List<String> letters, Set<String> alphabet) {
@@ -185,7 +202,7 @@ public class Main {
 
     @SneakyThrows
     private static void encrypt() {
-        File file = fileProcessor.getFile("/raw/video/1.3gp");
+        File file = fileProcessor.getFile("/raw/video/10.3gp");
         FileInputStream fileInputStream = new FileInputStream(file);
         byte[] bytes = IOUtils.toByteArray(fileInputStream);
         fileInputStream.close();
