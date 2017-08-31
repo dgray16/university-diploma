@@ -99,7 +99,8 @@ public class Main {
     public static void main(String[] args) {
         /*runTextTest();*/
         /*runAudioTest();*/
-        runVideoTest();
+        /*runVideoTest();*/
+        runImageTest();
     }
 
     private static void runTextTest() {
@@ -169,6 +170,16 @@ public class Main {
         });
     }
 
+    private static void runImageTest() {
+        encrypt();
+
+        Cipher cipher = Cipher.DES;
+        FileType fileType = FileType.IMAGE;
+        List<File> files = fileProcessor.getFiles(cipher.getPath().concat(fileType.getType()));
+
+        files.forEach(file -> LOG.info("File size: {}", FileUtils.byteCountToDisplaySize(fileProcessor.getText(file).getBytes().length)));
+    }
+
     private static void setupListOfIdealCipher(List<String> letters, Set<String> alphabet) {
         int lettersSize = letters.size();
         int alphabetSize = alphabet.size();
@@ -202,7 +213,7 @@ public class Main {
 
     @SneakyThrows
     private static void encrypt() {
-        File file = fileProcessor.getFile("/raw/video/10.3gp");
+        File file = fileProcessor.getFile("/raw/image/3.jpg");
         FileInputStream fileInputStream = new FileInputStream(file);
         byte[] bytes = IOUtils.toByteArray(fileInputStream);
         fileInputStream.close();

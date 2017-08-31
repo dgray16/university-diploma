@@ -7,7 +7,8 @@ public enum FileType {
 
     TEXT("text"),
     AUDIO("audio"),
-    VIDEO("video");
+    VIDEO("video"),
+    IMAGE("image");
 
     private String type;
 
