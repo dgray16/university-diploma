@@ -1,21 +1,12 @@
 
 import lombok.SneakyThrows;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-
 import java.io.File;
-import java.io.FileReader;
-import java.io.RandomAccessFile;
-import java.math.BigDecimal;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static java.lang.Integer.parseInt;
-
 
 public class FileProcessor {
 
