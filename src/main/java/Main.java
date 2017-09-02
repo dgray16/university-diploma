@@ -12,8 +12,6 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Set;
 
-
-
 import static java.util.stream.Collectors.joining;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 
@@ -104,54 +102,24 @@ public class Main {
     }
 
     private static void runTextTest() {
-        Cipher cipher = Cipher.DES;
-        FileType fileType = FileType.TEXT;
-
         /* TODO there is strange workflow with 2, 8, 10 MB files? */
         /*List<File> files = fileProcessor.getTextFilesWithName(cipher.getPath(), 10);*/
-
-        List<File> files = fileProcessor.getFiles(cipher.getPath().concat(fileType.getType()));
-
-        files.forEach(file -> {
-            String cipherText = fileProcessor.getText(file);
-            LOG.info("Type: {}", fileType.getType());
-            LOG.info("File size: {}", FileUtils.byteCountToDisplaySize(cipherText.getBytes().length));
-
-            BigDecimal h0 = entropyCalculator.calculate(cipher.getPure(), cipherText);
-
-            List<String> letters = entropyCalculator.getCipherTextAsList(cipherText);
-            setupListOfIdealCipher(letters, entropyCalculator.getAlphabet(cipherText));
-            BigDecimal h1 = entropyCalculator.calculate(cipher.getIdeal(), letters.parallelStream().collect(joining(EMPTY)));
-
-            LOG.info("{} - {} = {} - {} = {}", cipher.getIdeal(), cipher.getPure(), h1, h0, h1.subtract(h0));
-            System.out.println("\n");
-        });
+        createTest(Cipher.DES, FileType.TEXT);
     }
 
     private static void runAudioTest() {
-        Cipher cipher = Cipher.DES;
-        FileType fileType = FileType.AUDIO;
-        List<File> files = fileProcessor.getFiles(cipher.getPath().concat(fileType.getType()));
-
-        files.forEach(file -> {
-            String cipherText = fileProcessor.getText(file);
-            LOG.info("Type: {}", fileType.getType());
-            LOG.info("File size: {}", FileUtils.byteCountToDisplaySize(cipherText.getBytes().length));
-
-            BigDecimal h0 = entropyCalculator.calculate(cipher.getPure(), cipherText);
-
-            List<String> letters = entropyCalculator.getCipherTextAsList(cipherText);
-            setupListOfIdealCipher(letters, entropyCalculator.getAlphabet(cipherText));
-            BigDecimal h1 = entropyCalculator.calculate(cipher.getIdeal(), letters.parallelStream().collect(joining(EMPTY)));
-
-            LOG.info("{} - {} = {} - {} = {}", cipher.getIdeal(), cipher.getPure(), h1, h0, h1.subtract(h0));
-            System.out.println("\n");
-        });
+        createTest(Cipher.DES, FileType.AUDIO);
     }
 
     private static void runVideoTest() {
-        Cipher cipher = Cipher.DES;
-        FileType fileType = FileType.VIDEO;
+        createTest(Cipher.DES, FileType.VIDEO);
+    }
+
+    private static void runImageTest() {
+        createTest(Cipher.DES, FileType.IMAGE);
+    }
+
+    private static void createTest(Cipher cipher, FileType fileType) {
         List<File> files = fileProcessor.getFiles(cipher.getPath().concat(fileType.getType()));
 
         files.forEach(file -> {
@@ -168,16 +136,6 @@ public class Main {
             LOG.info("{} - {} = {} - {} = {}", cipher.getIdeal(), cipher.getPure(), h1, h0, h1.subtract(h0));
             System.out.println("\n");
         });
-    }
-
-    private static void runImageTest() {
-        encrypt();
-
-        Cipher cipher = Cipher.DES;
-        FileType fileType = FileType.IMAGE;
-        List<File> files = fileProcessor.getFiles(cipher.getPath().concat(fileType.getType()));
-
-        files.forEach(file -> LOG.info("File size: {}", FileUtils.byteCountToDisplaySize(fileProcessor.getText(file).getBytes().length)));
     }
 
     private static void setupListOfIdealCipher(List<String> letters, Set<String> alphabet) {
@@ -213,7 +171,7 @@ public class Main {
 
     @SneakyThrows
     private static void encrypt() {
-        File file = fileProcessor.getFile("/raw/image/3.jpg");
+        File file = fileProcessor.getFile("/raw/image/10.jpg");
         FileInputStream fileInputStream = new FileInputStream(file);
         byte[] bytes = IOUtils.toByteArray(fileInputStream);
         fileInputStream.close();
