@@ -24,6 +24,13 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
  * 5. Calculate entropy of ideal cipher.
  * 6. Compare.
  *
+ * Info:
+ * <ul>
+ *     <li>https://ru.wikipedia.org/wiki/%D0%A1%D1%82%D0%B0%D1%82%D0%B8%D1%81%D1%82%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B5_%D1%82%D0%B5%D1%81%D1%82%D1%8B_NIST</li>
+ *     <li>http://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-22r1a.pdf</li>
+ *     <li>https://github.com/kravietz/nist-sts</li>
+ * </ul>
+ *
  Test text data:
 
  20:56:13.832 [main] INFO  Main - File size: 96 bytes
