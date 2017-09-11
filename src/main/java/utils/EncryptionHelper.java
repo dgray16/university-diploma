@@ -12,7 +12,7 @@ import java.util.Base64;
 public class EncryptionHelper {
 
     @SneakyThrows
-    public static String des(byte[] key, byte[] plainText) {
+    public static String desWithBase64(byte[] key, byte[] plainText) {
         SecretKey secretKey = new SecretKeySpec(key, "DES");
 
         Cipher desCipher = Cipher.getInstance("DES/CBC/PKCS5Padding");
@@ -20,6 +20,29 @@ public class EncryptionHelper {
 
         byte[] encrypted = desCipher.doFinal(plainText);
         return Base64.getEncoder().encodeToString(encrypted);
+    }
+
+    /**
+     * Converts byte value (-59) into
+     * binary format (1111111111111111111111111111111111111111111111111111111111000101)
+     * and appends to StringBuilder.
+     */
+    @SneakyThrows
+    public static String desWithoutBase64(byte[] key, byte[] plainText) {
+        SecretKey secretKey = new SecretKeySpec(key, "DES");
+
+        Cipher desCipher = Cipher.getInstance("DES/CBC/PKCS5Padding");
+        desCipher.init(Cipher.ENCRYPT_MODE, secretKey);
+
+        byte[] bytes = desCipher.doFinal(plainText);
+        StringBuilder stringBuilder = new StringBuilder();
+
+        for (Byte byteValue : bytes) {
+            int intValue = byteValue.intValue();
+            stringBuilder.append(Integer.toBinaryString(intValue));
+        }
+
+        return stringBuilder.toString();
     }
 
 }

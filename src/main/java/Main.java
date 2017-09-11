@@ -8,6 +8,7 @@ import utils.EncryptionHelper;
 import javax.crypto.KeyGenerator;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Set;
@@ -30,6 +31,7 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
  *     <li>http://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-22r1a.pdf</li>
  *     <li>https://github.com/kravietz/nist-sts</li>
  *     <li>https://ru.wikipedia.org/wiki/%D0%A4%D0%BE%D1%80%D0%BC%D1%83%D0%BB%D0%B0_%D0%A5%D0%B0%D1%80%D1%82%D0%BB%D0%B8</li>
+ *     <li>http://www.binaryhexconverter.com/decimal-to-binary-converter</li>
  * </ul>
  *
  Test text data:
@@ -124,7 +126,8 @@ public class Main {
     }
 
     private static void runImageTest() {
-        createTest(Cipher.DES, FileType.IMAGE);
+        encrypt();
+        // createTest(Cipher.DES, FileType.IMAGE);
     }
 
     private static void createTest(Cipher cipher, FileType fileType) {
@@ -186,7 +189,17 @@ public class Main {
 
         KeyGenerator keyGenerator = KeyGenerator.getInstance("DES");
         byte[] generatedKey = keyGenerator.generateKey().getEncoded();
-        String value = EncryptionHelper.des(generatedKey, bytes);
+
+        // String value = EncryptionHelper.desWithBase64(generatedKey, bytes);
+
+        String value = EncryptionHelper.desWithoutBase64(generatedKey, bytes);
+        File file1 = fileProcessor.getFile("/encrypted/des/test.txt");
+        FileWriter fileWriter = new FileWriter(file1);
+        fileWriter.write(value);
+        fileWriter.flush();
+        fileWriter.close();
+        /* Now, you can take file from classes folder */
+
         System.out.println();
     }
 
