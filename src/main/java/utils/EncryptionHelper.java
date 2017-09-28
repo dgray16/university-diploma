@@ -41,8 +41,17 @@ public class EncryptionHelper {
             int intValue = byteValue.intValue();
             stringBuilder.append(Integer.toBinaryString(intValue));
         }
-
         return stringBuilder.toString();
+    }
+
+    @SneakyThrows
+    public static byte[] desWithoutBase64ToBytes(byte[] key, byte[] plainText) {
+        SecretKey secretKey = new SecretKeySpec(key, "DES");
+
+        Cipher desCipher = Cipher.getInstance("DES/CBC/PKCS5Padding");
+        desCipher.init(Cipher.ENCRYPT_MODE, secretKey);
+
+        return desCipher.doFinal(plainText);
     }
 
 }

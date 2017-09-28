@@ -10,7 +10,15 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static java.util.stream.Collectors.joining;
@@ -105,10 +113,16 @@ public class Main {
 
 
     public static void main(String[] args) {
+        List<File> files = fileProcessor.getFiles(Cipher.DES.getPath().concat(FileType.TEXT.getType()));
+
+        files.forEach(file -> {
+            LOG.info("File size: {}", FileUtils.byteCountToDisplaySize(file.length()));
+        });
+        encrypt();
         /*runTextTest();*/
         /*runAudioTest();*/
         /*runVideoTest();*/
-        runImageTest();
+        /*runImageTest();*/
     }
 
     private static void runTextTest() {
@@ -126,8 +140,8 @@ public class Main {
     }
 
     private static void runImageTest() {
-        encrypt();
-        // createTest(Cipher.DES, FileType.IMAGE);
+
+        createTest(Cipher.DES, FileType.IMAGE);
     }
 
     private static void createTest(Cipher cipher, FileType fileType) {
@@ -182,7 +196,8 @@ public class Main {
 
     @SneakyThrows
     private static void encrypt() {
-        File file = fileProcessor.getFile("/raw/image/10.jpg");
+        /* TODO generate new raw, encrypted files */
+        File file = fileProcessor.getFile("/raw/text/10.txt");
         FileInputStream fileInputStream = new FileInputStream(file);
         byte[] bytes = IOUtils.toByteArray(fileInputStream);
         fileInputStream.close();
@@ -190,16 +205,12 @@ public class Main {
         KeyGenerator keyGenerator = KeyGenerator.getInstance("DES");
         byte[] generatedKey = keyGenerator.generateKey().getEncoded();
 
-        // String value = EncryptionHelper.desWithBase64(generatedKey, bytes);
-
-        String value = EncryptionHelper.desWithoutBase64(generatedKey, bytes);
         File file1 = fileProcessor.getFile("/encrypted/des/test.txt");
-        FileWriter fileWriter = new FileWriter(file1);
-        fileWriter.write(value);
-        fileWriter.flush();
-        fileWriter.close();
-        /* Now, you can take file from classes folder */
 
+        /* Binary file */
+        Files.write(Paths.get(file1.toURI()), EncryptionHelper.desWithoutBase64ToBytes(generatedKey, bytes));
+
+        /* Now, you can take file from classes folder */
         System.out.println();
     }
 
