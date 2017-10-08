@@ -28,7 +28,7 @@ public class EncryptionHelper {
      * and appends to StringBuilder.
      */
     @SneakyThrows
-    public static String desWithoutBase64(byte[] key, byte[] plainText) {
+    public static String desToString(byte[] key, byte[] plainText) {
         SecretKey secretKey = new SecretKeySpec(key, "DES");
 
         Cipher desCipher = Cipher.getInstance("DES/CBC/PKCS5Padding");
@@ -45,7 +45,7 @@ public class EncryptionHelper {
     }
 
     @SneakyThrows
-    public static byte[] desWithoutBase64ToBytes(byte[] key, byte[] plainText) {
+    public static byte[] desToBytes(byte[] key, byte[] plainText) {
         SecretKey secretKey = new SecretKeySpec(key, "DES");
 
         Cipher desCipher = Cipher.getInstance("DES/CBC/PKCS5Padding");

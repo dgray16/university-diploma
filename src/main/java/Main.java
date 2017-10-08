@@ -8,17 +8,11 @@ import utils.EncryptionHelper;
 import javax.crypto.KeyGenerator;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileWriter;
 import java.math.BigDecimal;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import static java.util.stream.Collectors.joining;
@@ -102,6 +96,24 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
  21:00:14.047 [main] INFO  Main - DES-pure ( H = 5.999998 )
  21:00:52.550 [main] INFO  Main - DES-ideal ( H = 6.000000 )
  21:00:52.550 [main] INFO  Main - DES-ideal - DES-pure = 6.000000 - 5.999998 = 0.000002
+
+ * File sizes:
+ * <ul>
+ *     <li>1 MB</li>
+ *     <li>2 MB</li>
+ *
+ *     <li>3 MB</li>
+ *     <li>4 MB</li>
+ *
+ *     <li>5 MB</li>
+ *     <li>6 MB</li>
+ *
+ *     <li>7 MB</li>
+ *     <li>8 MB</li>
+ *
+ *     <li>10 MB</li>
+ *     <li>12 MB</li>
+ * </ul>
  */
 public class Main {
 
@@ -113,13 +125,16 @@ public class Main {
 
 
     public static void main(String[] args) {
+
+        //encrypt();
+
         List<File> files = fileProcessor.getFiles(Cipher.DES.getPath().concat(FileType.TEXT.getType()));
 
         files.forEach(file -> {
             LOG.info("File size: {}", FileUtils.byteCountToDisplaySize(file.length()));
         });
-        encrypt();
-        /*runTextTest();*/
+
+        // runTextTest();
         /*runAudioTest();*/
         /*runVideoTest();*/
         /*runImageTest();*/
@@ -128,27 +143,31 @@ public class Main {
     private static void runTextTest() {
         /* TODO there is strange workflow with 2, 8, 10 MB files? */
         /*List<File> files = fileProcessor.getTextFilesWithName(cipher.getPath(), 10);*/
-        createTest(Cipher.DES, FileType.TEXT);
+        /*createStringTest(Cipher.DES, FileType.TEXT);*/
+        createBinaryTest(Cipher.DES, FileType.TEXT);
     }
 
     private static void runAudioTest() {
-        createTest(Cipher.DES, FileType.AUDIO);
+        createStringTest(Cipher.DES, FileType.AUDIO);
     }
 
     private static void runVideoTest() {
-        createTest(Cipher.DES, FileType.VIDEO);
+        createStringTest(Cipher.DES, FileType.VIDEO);
     }
 
     private static void runImageTest() {
 
-        createTest(Cipher.DES, FileType.IMAGE);
+        createStringTest(Cipher.DES, FileType.IMAGE);
     }
 
-    private static void createTest(Cipher cipher, FileType fileType) {
+    /**
+     * This test is created to work with text like: "Hello worlds, I am Vova and this is some text I am typing."
+     */
+    private static void createStringTest(Cipher cipher, FileType fileType) {
         List<File> files = fileProcessor.getFiles(cipher.getPath().concat(fileType.getType()));
 
         files.forEach(file -> {
-            String cipherText = fileProcessor.getText(file);
+            String cipherText = fileProcessor.getTextFromFile(file);
             LOG.info("Type: {}", fileType.getType());
             LOG.info("File size: {}", FileUtils.byteCountToDisplaySize(cipherText.getBytes().length));
 
@@ -163,7 +182,53 @@ public class Main {
         });
     }
 
+    /**
+     * This test is created to work with binary files in byte format like: [12, 545, 24, -12].
+     */
+    private static void createBinaryTest(Cipher cipher, FileType fileType) {
+        List<File> files = fileProcessor.getFiles(cipher.getPath().concat(fileType.getType()));
+
+        files.forEach(file -> {
+            byte[] plainBytes = fileProcessor.getBytesFromBinaryFile(file);
+            LOG.info("Type: {}", fileType.getType());
+            LOG.info("File size: {}", FileUtils.byteCountToDisplaySize(plainBytes.length));
+
+            BigDecimal h0 = entropyCalculator.calculate(cipher.getPure(), plainBytes);
+
+            List<Integer> letters = entropyCalculator.getCipherTextAsList(plainBytes);
+            setupListOfIdealCipherForBinary(letters, entropyCalculator.getAlphabet(plainBytes));
+
+            byte[] lettersInBytes = new byte[letters.size()];
+            for (int i = 0; i < letters.size(); i++) {
+                lettersInBytes[i] = letters.get(i).byteValue();
+            }
+
+            BigDecimal h1 = entropyCalculator.calculate(cipher.getIdeal(), lettersInBytes);
+
+            LOG.info("{} - {} = {} - {} = {}", cipher.getIdeal(), cipher.getPure(), h1, h0, h1.subtract(h0));
+            System.out.println("\n");
+        });
+    }
+
     private static void setupListOfIdealCipher(List<String> letters, Set<String> alphabet) {
+        int lettersSize = letters.size();
+        int alphabetSize = alphabet.size();
+        letters.clear();
+
+        alphabet.forEach(letter -> {
+            if ( lettersSize > alphabetSize ) {
+                int iterations = findIterations(alphabetSize, lettersSize);
+
+                if ( alphabetSize * iterations >= lettersSize ) {
+                    for (int i = 0; i < iterations; i++) {
+                        letters.add(letter);
+                    }
+                }
+            }
+        });
+    }
+
+    private static void setupListOfIdealCipherForBinary(List<Integer> letters, Set<Integer> alphabet) {
         int lettersSize = letters.size();
         int alphabetSize = alphabet.size();
         letters.clear();
@@ -196,19 +261,26 @@ public class Main {
 
     @SneakyThrows
     private static void encrypt() {
-        /* TODO generate new raw, encrypted files */
-        File file = fileProcessor.getFile("/raw/text/10.txt");
-        FileInputStream fileInputStream = new FileInputStream(file);
-        byte[] bytes = IOUtils.toByteArray(fileInputStream);
-        fileInputStream.close();
+        List<File> files = fileProcessor.getFiles("/raw/text/");
+        String rootPath = Main.class.getResource("/encrypted/des/").getPath().toString();
 
-        KeyGenerator keyGenerator = KeyGenerator.getInstance("DES");
-        byte[] generatedKey = keyGenerator.generateKey().getEncoded();
+        for (int i = 1; i <= files.size(); i++) {
+            File file = fileProcessor.getFile(String.format("/raw/text/%s.txt", i));
+            FileInputStream fileInputStream = new FileInputStream(file);
+            byte[] bytes = IOUtils.toByteArray(fileInputStream);
+            fileInputStream.close();
 
-        File file1 = fileProcessor.getFile("/encrypted/des/test.txt");
+            KeyGenerator keyGenerator = KeyGenerator.getInstance("DES");
+            byte[] generatedKey = keyGenerator.generateKey().getEncoded();
+            byte[] encryptedBytes = EncryptionHelper.desToBytes(generatedKey, bytes);
 
-        /* Binary file */
-        Files.write(Paths.get(file1.toURI()), EncryptionHelper.desWithoutBase64ToBytes(generatedKey, bytes));
+            File file1 = new File(String.format(rootPath.concat("%s.txt"), i));
+
+            /* Binary file */
+            Files.write(Paths.get(file1.toURI()), encryptedBytes);
+        }
+
+        /* TODO everything is ready, generate raw files, enrypt it, copy files to corresponding directory */
 
         /* Now, you can take file from classes folder */
         System.out.println();

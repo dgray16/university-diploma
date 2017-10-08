@@ -1,12 +1,23 @@
 
 import lombok.SneakyThrows;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static java.lang.Integer.parseInt;
+import static java.util.Objects.nonNull;
 
 public class FileProcessor {
 
@@ -15,14 +26,22 @@ public class FileProcessor {
      */
     @SneakyThrows
     public List<File> getFiles(String path) {
-        File directory = new File(Main.class.getResource(path).toURI());
-        return Arrays.stream(directory.listFiles())
-                .sorted((obj1, obj2) -> {
-                    Integer value1 = parseInt(obj1.getName().split(".txt")[0]);
-                    Integer value2 = parseInt(obj2.getName().split(".txt")[0]);
-                    return value1.compareTo(value2);
-                })
-                .collect(Collectors.toList());
+        URL url = Main.class.getResource(path);
+        File directory = null;
+
+        if (nonNull(url)) {
+            directory = new File(url.toURI());
+        }
+
+        return nonNull(directory)
+                ? Arrays.stream(directory.listFiles())
+                    .sorted((obj1, obj2) -> {
+                        Integer value1 = parseInt(obj1.getName().split(".txt")[0]);
+                        Integer value2 = parseInt(obj2.getName().split(".txt")[0]);
+                        return value1.compareTo(value2);
+                    })
+                    .collect(Collectors.toList())
+                : Collections.emptyList();
     }
 
     @SneakyThrows
@@ -42,9 +61,45 @@ public class FileProcessor {
     }
 
     @SneakyThrows
-    public String getText(File file) {
+    public String getTextFromFile(File file) {
         List<String> lines = Files.readAllLines(file.toPath());
-        return lines.parallelStream().map(String::trim).collect(Collectors.joining(" "));
+        return lines.parallelStream().map(String::trim).collect(Collectors.joining(StringUtils.SPACE));
     }
+
+    public String getTextFromBinaryFile(File file) {
+        String fileChar;
+        FileReader fileReader = null;
+
+        try {
+            fileReader = new FileReader(file);
+        } catch (FileNotFoundException e) {
+            Main.LOG.error(e.getMessage());
+        }
+
+        BufferedReader bufferReader = new BufferedReader(fileReader);
+        StringBuilder stringBuilder = new StringBuilder();
+
+        try {
+            while(nonNull((fileChar = bufferReader.readLine()))){
+                stringBuilder.append(fileChar);
+            }
+        } catch (IOException e) {
+            Main.LOG.error(e.getMessage());
+        } finally {
+            try {
+                bufferReader.close();
+                fileReader.close();
+            } catch (IOException e) {
+                Main.LOG.error(e.getMessage());
+            }
+        }
+        return stringBuilder.toString();
+    }
+
+    @SneakyThrows
+    public byte[] getBytesFromBinaryFile(File file) {
+        return IOUtils.toByteArray(new FileInputStream(file.getAbsoluteFile()));
+    }
+
 
 }
