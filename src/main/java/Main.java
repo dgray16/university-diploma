@@ -9,10 +9,11 @@ import javax.crypto.KeyGenerator;
 import java.io.File;
 import java.io.FileInputStream;
 import java.math.BigDecimal;
-import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.security.SecureRandom;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 import static java.util.stream.Collectors.joining;
@@ -125,16 +126,16 @@ public class Main {
 
 
     public static void main(String[] args) {
-
+        /*weakPseudorandomNumberGenerator();*/
+        /*strongPseudorandomNumberGenerator();*/
         //encrypt();
 
-        List<File> files = fileProcessor.getFiles(Cipher.DES.getPath().concat(FileType.TEXT.getType()));
-
+        /*List<File> files = fileProcessor.getFiles(Cipher.XOR_WEAK.getPath().concat(TestType.TEXT.getType()));
         files.forEach(file -> {
             LOG.info("File size: {}", FileUtils.byteCountToDisplaySize(file.length()));
-        });
+        });*/
 
-        // runTextTest();
+        runTextTest();
         /*runAudioTest();*/
         /*runVideoTest();*/
         /*runImageTest();*/
@@ -143,27 +144,75 @@ public class Main {
     private static void runTextTest() {
         /* TODO there is strange workflow with 2, 8, 10 MB files? */
         /*List<File> files = fileProcessor.getTextFilesWithName(cipher.getPath(), 10);*/
-        /*createStringTest(Cipher.DES, FileType.TEXT);*/
-        createBinaryTest(Cipher.DES, FileType.TEXT);
+
+        /*createStringTest(Cipher.DES, TestType.TEXT);*/
+        /*createBinaryTest(Cipher.DES, TestType.TEXT);*/
+        /*createBinaryTest(Cipher.XOR_WEAK, TestType.TEXT);*/
+        createBinaryTest(Cipher.XOR_STRONG, TestType.TEXT);
     }
 
     private static void runAudioTest() {
-        createStringTest(Cipher.DES, FileType.AUDIO);
+        /*createStringTest(Cipher.DES, TestType.AUDIO);*/
+        createBinaryTest(Cipher.DES, TestType.AUDIO);
     }
 
     private static void runVideoTest() {
-        createStringTest(Cipher.DES, FileType.VIDEO);
+        /*createStringTest(Cipher.DES, TestType.VIDEO);*/
+        createBinaryTest(Cipher.DES, TestType.VIDEO);
     }
 
     private static void runImageTest() {
+        /*createStringTest(Cipher.DES, TestType.IMAGE);*/
+        createBinaryTest(Cipher.DES, TestType.IMAGE);
+    }
 
-        createStringTest(Cipher.DES, FileType.IMAGE);
+    @SneakyThrows
+    private static void weakPseudorandomNumberGenerator() {
+        for (int i = 1; i <= 10; i++) {
+            File file = fileProcessor.getFile(String.format("/raw/text/%s.txt", i));
+            FileInputStream fileInputStream = new FileInputStream(file);
+            byte[] plainText = IOUtils.toByteArray(fileInputStream);
+
+            byte[] xorBytes = new byte[plainText.length];
+            Random randomValue = new Random();
+
+            for (int iterator = 0; iterator < plainText.length; iterator++) {
+                xorBytes[iterator] = Integer.valueOf(plainText[iterator] ^ randomValue.nextInt(2)).byteValue();
+            }
+
+            String rootPath = Main.class.getResource("/encrypted/").getPath().toString();
+            File file1 = new File(rootPath.concat(String.format("%s.txt", i)));
+            /* Binary file */
+            Files.write(Paths.get(file1.toURI()), xorBytes);
+        }
+    }
+
+    @SneakyThrows
+    private static void strongPseudorandomNumberGenerator() {
+        for (int i = 1; i <= 10; i++) {
+            File file = fileProcessor.getFile(String.format("/raw/text/%s.txt", i));
+            FileInputStream fileInputStream = new FileInputStream(file);
+            byte[] plainText = IOUtils.toByteArray(fileInputStream);
+
+            byte[] xorBytes = new byte[plainText.length];
+            SecureRandom secureRandomValue = new SecureRandom();
+
+            for (int iterator = 0; iterator < plainText.length; iterator++) {
+                xorBytes[iterator] = Integer.valueOf(plainText[iterator] ^ secureRandomValue.nextInt(2)).byteValue();
+            }
+
+            String rootPath = Main.class.getResource("/encrypted/").getPath().toString();
+            File file1 = new File(rootPath.concat(String.format("%s.txt", i)));
+            /* Binary file */
+            Files.write(Paths.get(file1.toURI()), xorBytes);
+            LOG.debug("File {} finished", i);
+        }
     }
 
     /**
      * This test is created to work with text like: "Hello worlds, I am Vova and this is some text I am typing."
      */
-    private static void createStringTest(Cipher cipher, FileType fileType) {
+    private static void createStringTest(Cipher cipher, TestType fileType) {
         List<File> files = fileProcessor.getFiles(cipher.getPath().concat(fileType.getType()));
 
         files.forEach(file -> {
@@ -185,7 +234,7 @@ public class Main {
     /**
      * This test is created to work with binary files in byte format like: [12, 545, 24, -12].
      */
-    private static void createBinaryTest(Cipher cipher, FileType fileType) {
+    private static void createBinaryTest(Cipher cipher, TestType fileType) {
         List<File> files = fileProcessor.getFiles(cipher.getPath().concat(fileType.getType()));
 
         files.forEach(file -> {
@@ -279,8 +328,6 @@ public class Main {
             /* Binary file */
             Files.write(Paths.get(file1.toURI()), encryptedBytes);
         }
-
-        /* TODO everything is ready, generate raw files, enrypt it, copy files to corresponding directory */
 
         /* Now, you can take file from classes folder */
         System.out.println();
