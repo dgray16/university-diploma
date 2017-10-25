@@ -18,7 +18,10 @@ public enum Cipher {
     SERPENT("Serpent-pure", "Serpent-ideal", EMPTY),
     XTEA("XTEA-pure", "XTEA-ideal", EMPTY),
     XOR_WEAK("XOR-WEAK", "XOR-WEAK-ideal", "/encrypted/pseudorandomnumbergenerator/weak/"),
-    XOR_STRONG("XOR-STRONG", "XOR-STRONG-ideal", "/encrypted/pseudorandomnumbergenerator/strong/");
+    XOR_STRONG("XOR-STRONG", "XOR-STRONG-ideal", "/encrypted/pseudorandomnumbergenerator/strong/"),
+
+    /** Means no cipher at all ( plaintext ) */
+    RAW("RAW", "RAW-idea", "raw/");
 
     private String pure;
     private String ideal;

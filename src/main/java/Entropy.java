@@ -158,12 +158,13 @@ public class Entropy {
         /* 1MB  file - (result: -0.09265, pValue: 0.015384, log: -6.0223, pValues: 65) */
     }
 
-    private Double calculateHValueForBinary(List<Map<Integer, Integer>> list, Integer textLength) {
-        List<Double> pValues = getPListForBinary(list, textLength);
+    private Double calculateHValueForBinary(List<Map<Integer, Integer>> frequency, Integer textLength) {
+        List<Double> pValues = getPListForBinary(frequency, textLength);
         Double result = 0D;
 
         for (Double pValue : pValues) {
-            result += pValue * (log(pValue) / log(2));
+            /* Shannon`s formula */
+            result += pValue * ( log(pValue) / log(2) );
         }
 
         return -result;

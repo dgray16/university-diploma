@@ -126,9 +126,9 @@ public class Main {
 
 
     public static void main(String[] args) {
-        /*weakPseudorandomNumberGenerator();*/
-        /*strongPseudorandomNumberGenerator();*/
-        //encrypt();
+        // weakPseudorandomNumberGenerator();
+        // strongPseudorandomNumberGenerator();
+        // encrypt();
 
         /*List<File> files = fileProcessor.getFiles(Cipher.XOR_WEAK.getPath().concat(TestType.TEXT.getType()));
         files.forEach(file -> {
@@ -146,9 +146,9 @@ public class Main {
         /*List<File> files = fileProcessor.getTextFilesWithName(cipher.getPath(), 10);*/
 
         /*createStringTest(Cipher.DES, TestType.TEXT);*/
-        /*createBinaryTest(Cipher.DES, TestType.TEXT);*/
-        /*createBinaryTest(Cipher.XOR_WEAK, TestType.TEXT);*/
-        createBinaryTest(Cipher.XOR_STRONG, TestType.TEXT);
+        createBinaryTest(Cipher.DES, TestType.TEXT);
+
+        createTestWithoutIdeal(Cipher.RAW, TestType.TEXT);
     }
 
     private static void runAudioTest() {
@@ -169,43 +169,48 @@ public class Main {
     @SneakyThrows
     private static void weakPseudorandomNumberGenerator() {
         for (int i = 1; i <= 10; i++) {
-            File file = fileProcessor.getFile(String.format("/raw/text/%s.txt", i));
+            File file = fileProcessor.getFile(String.format("/encrypted/des/text/%s.txt", i));
             FileInputStream fileInputStream = new FileInputStream(file);
-            byte[] plainText = IOUtils.toByteArray(fileInputStream);
+            byte[] encryptedText = IOUtils.toByteArray(fileInputStream);
 
-            byte[] xorBytes = new byte[plainText.length];
+            byte[] randomBytes = new byte[encryptedText.length];
             Random randomValue = new Random();
+            randomValue.nextBytes(randomBytes);
 
-            for (int iterator = 0; iterator < plainText.length; iterator++) {
-                xorBytes[iterator] = Integer.valueOf(plainText[iterator] ^ randomValue.nextInt(2)).byteValue();
+            byte[] xoredBytes = new byte[encryptedText.length];
+
+            for (int iterator = 0; iterator < encryptedText.length; iterator++) {
+                xoredBytes[iterator] = (byte) (encryptedText[iterator] ^ randomBytes[iterator]);
             }
 
             String rootPath = Main.class.getResource("/encrypted/").getPath().toString();
             File file1 = new File(rootPath.concat(String.format("%s.txt", i)));
             /* Binary file */
-            Files.write(Paths.get(file1.toURI()), xorBytes);
+            Files.write(Paths.get(file1.toURI()), xoredBytes);
         }
     }
 
     @SneakyThrows
     private static void strongPseudorandomNumberGenerator() {
         for (int i = 1; i <= 10; i++) {
-            File file = fileProcessor.getFile(String.format("/raw/text/%s.txt", i));
+            File file = fileProcessor.getFile(String.format("/encrypted/des/text/%s.txt", i));
             FileInputStream fileInputStream = new FileInputStream(file);
-            byte[] plainText = IOUtils.toByteArray(fileInputStream);
+            byte[] encryptedText = IOUtils.toByteArray(fileInputStream);
 
-            byte[] xorBytes = new byte[plainText.length];
-            SecureRandom secureRandomValue = new SecureRandom();
+            byte[] randomBytes = new byte[encryptedText.length];
+            SecureRandom randomValue = new SecureRandom();
+            randomValue.nextBytes(randomBytes);
 
-            for (int iterator = 0; iterator < plainText.length; iterator++) {
-                xorBytes[iterator] = Integer.valueOf(plainText[iterator] ^ secureRandomValue.nextInt(2)).byteValue();
+            byte[] xoredBytes = new byte[encryptedText.length];
+
+            for (int iterator = 0; iterator < encryptedText.length; iterator++) {
+                xoredBytes[iterator] = (byte) (encryptedText[iterator] ^ randomBytes[iterator]);
             }
 
             String rootPath = Main.class.getResource("/encrypted/").getPath().toString();
             File file1 = new File(rootPath.concat(String.format("%s.txt", i)));
             /* Binary file */
-            Files.write(Paths.get(file1.toURI()), xorBytes);
-            LOG.debug("File {} finished", i);
+            Files.write(Paths.get(file1.toURI()), xoredBytes);
         }
     }
 
@@ -259,6 +264,22 @@ public class Main {
         });
     }
 
+    /**
+     * It shows data only for current result, ideal sequence is not calculating.
+     */
+    private static void createTestWithoutIdeal(Cipher cipher, TestType fileType) {
+        List<File> files = fileProcessor.getFiles(cipher.getPath().concat(fileType.getType()));
+
+        files.forEach(file -> {
+            byte[] plainBytes = fileProcessor.getTextFromFile(file).getBytes();
+            LOG.info("Type: {}", fileType.getType());
+            LOG.info("File size: {}", FileUtils.byteCountToDisplaySize(plainBytes.length));
+
+            BigDecimal h0 = entropyCalculator.calculate(cipher.getPure(), plainBytes);
+            System.out.println("\n");
+        });
+    }
+
     private static void setupListOfIdealCipher(List<String> letters, Set<String> alphabet) {
         int lettersSize = letters.size();
         int alphabetSize = alphabet.size();
@@ -284,6 +305,7 @@ public class Main {
 
         alphabet.forEach(letter -> {
             if ( lettersSize > alphabetSize ) {
+                /* Means that letters collection has duplicates and may be not be steady */
                 int iterations = findIterations(alphabetSize, lettersSize);
 
                 if ( alphabetSize * iterations >= lettersSize ) {
@@ -291,6 +313,9 @@ public class Main {
                         letters.add(letter);
                     }
                 }
+            } else {
+                /* Means that letters collection has no duplicates */
+                letters.add(letter);
             }
         });
     }
@@ -313,7 +338,7 @@ public class Main {
         List<File> files = fileProcessor.getFiles("/raw/text/");
         String rootPath = Main.class.getResource("/encrypted/des/").getPath().toString();
 
-        for (int i = 1; i <= files.size(); i++) {
+        /*for (int i = 1; i <= files.size(); i++) {
             File file = fileProcessor.getFile(String.format("/raw/text/%s.txt", i));
             FileInputStream fileInputStream = new FileInputStream(file);
             byte[] bytes = IOUtils.toByteArray(fileInputStream);
@@ -325,9 +350,23 @@ public class Main {
 
             File file1 = new File(String.format(rootPath.concat("%s.txt"), i));
 
-            /* Binary file */
+            *//* Binary file *//*
             Files.write(Paths.get(file1.toURI()), encryptedBytes);
-        }
+        }*/
+
+        File file = fileProcessor.getFile(String.format("/raw/text/%s.txt", 0));
+        FileInputStream fileInputStream = new FileInputStream(file);
+        byte[] bytes = IOUtils.toByteArray(fileInputStream);
+        fileInputStream.close();
+
+        KeyGenerator keyGenerator = KeyGenerator.getInstance("DES");
+        byte[] generatedKey = keyGenerator.generateKey().getEncoded();
+        byte[] encryptedBytes = EncryptionHelper.desToBytes(generatedKey, bytes);
+
+        File file1 = new File(String.format(rootPath.concat("%s.txt"), 0));
+
+        /* Binary file */
+        Files.write(Paths.get(file1.toURI()), encryptedBytes);
 
         /* Now, you can take file from classes folder */
         System.out.println();
