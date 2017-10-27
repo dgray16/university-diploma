@@ -5,7 +5,9 @@ import lombok.Getter;
 @Getter
 public enum TestType {
 
-    TEXT("text"),
+    TEXT_SINGLE("text/singlebook"),
+    TEXT_DOUBLE("text/twobooks"),
+
     AUDIO("audio"),
     VIDEO("video"),
     IMAGE("image");

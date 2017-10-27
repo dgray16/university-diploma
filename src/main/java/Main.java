@@ -146,9 +146,9 @@ public class Main {
         /*List<File> files = fileProcessor.getTextFilesWithName(cipher.getPath(), 10);*/
 
         /*createStringTest(Cipher.DES, TestType.TEXT);*/
-        createBinaryTest(Cipher.DES, TestType.TEXT);
+        // createBinaryTest(Cipher.DES, TestType.TEXT);
 
-        createTestWithoutIdeal(Cipher.RAW, TestType.TEXT);
+        createTestWithoutIdeal(Cipher.RAW, TestType.TEXT_DOUBLE);
     }
 
     private static void runAudioTest() {

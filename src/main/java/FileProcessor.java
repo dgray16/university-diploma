@@ -9,6 +9,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.util.Arrays;
@@ -18,6 +20,7 @@ import java.util.stream.Collectors;
 
 import static java.lang.Integer.parseInt;
 import static java.util.Objects.nonNull;
+import static java.util.Optional.ofNullable;
 
 public class FileProcessor {
 
@@ -60,9 +63,32 @@ public class FileProcessor {
                 .collect(Collectors.toList());
     }
 
-    @SneakyThrows
     public String getTextFromFile(File file) {
-        List<String> lines = Files.readAllLines(file.toPath());
+        List<String> lines = null;
+        FileInputStream fileInputStream = null;
+
+        try {
+            lines = Files.readAllLines(file.toPath());
+        } catch (IOException e) {
+            try {
+                fileInputStream = new FileInputStream(file.getAbsolutePath());
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(fileInputStream, "utf-8"));
+                lines = bufferedReader.lines().collect(Collectors.toList());
+            } catch (UnsupportedEncodingException | FileNotFoundException e1) {
+                Main.LOG.error(e1.getMessage());
+            }
+        } finally {
+            if (nonNull(fileInputStream)) {
+                try {
+                    fileInputStream.close();
+                } catch (IOException e) {
+                    Main.LOG.error(e.getMessage());
+                }
+            }
+        }
+
+        lines = ofNullable(lines).orElse(Collections.emptyList());
+
         return lines.parallelStream().map(String::trim).collect(Collectors.joining(StringUtils.SPACE));
     }
 
