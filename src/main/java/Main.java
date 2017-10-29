@@ -128,9 +128,9 @@ public class Main {
     public static void main(String[] args) {
         // weakPseudorandomNumberGenerator();
         // strongPseudorandomNumberGenerator();
-        // encrypt();
+        //encrypt();
 
-        /*List<File> files = fileProcessor.getFiles(Cipher.XOR_WEAK.getPath().concat(TestType.TEXT.getType()));
+        /*List<File> files = fileProcessor.getFiles(Cipher.DES.getPath().concat(TestType.TEXT_DOUBLE.getType()));
         files.forEach(file -> {
             LOG.info("File size: {}", FileUtils.byteCountToDisplaySize(file.length()));
         });*/
@@ -146,9 +146,9 @@ public class Main {
         /*List<File> files = fileProcessor.getTextFilesWithName(cipher.getPath(), 10);*/
 
         /*createStringTest(Cipher.DES, TestType.TEXT);*/
-        // createBinaryTest(Cipher.DES, TestType.TEXT);
+        createBinaryTest(Cipher.DES, TestType.TEXT_DOUBLE);
 
-        createTestWithoutIdeal(Cipher.RAW, TestType.TEXT_DOUBLE);
+        //createTestWithoutIdeal(Cipher.RAW, TestType.TEXT_DOUBLE);
     }
 
     private static void runAudioTest() {
@@ -335,11 +335,12 @@ public class Main {
 
     @SneakyThrows
     private static void encrypt() {
-        List<File> files = fileProcessor.getFiles("/raw/text/");
+        List<File> files = fileProcessor.getFiles("/raw/text/twobooks/");
         String rootPath = Main.class.getResource("/encrypted/des/").getPath().toString();
 
-        /*for (int i = 1; i <= files.size(); i++) {
-            File file = fileProcessor.getFile(String.format("/raw/text/%s.txt", i));
+        for (int i = 1; i <= files.size(); i++) {
+            Integer index = i - 1;
+            File file = files.get(index);
             FileInputStream fileInputStream = new FileInputStream(file);
             byte[] bytes = IOUtils.toByteArray(fileInputStream);
             fileInputStream.close();
@@ -350,11 +351,11 @@ public class Main {
 
             File file1 = new File(String.format(rootPath.concat("%s.txt"), i));
 
-            *//* Binary file *//*
-            Files.write(Paths.get(file1.toURI()), encryptedBytes);
-        }*/
 
-        File file = fileProcessor.getFile(String.format("/raw/text/%s.txt", 0));
+            Files.write(Paths.get(file1.toURI()), encryptedBytes);
+        }
+
+        /*File file = fileProcessor.getFile(String.format("/raw/text/%s.txt", 0));
         FileInputStream fileInputStream = new FileInputStream(file);
         byte[] bytes = IOUtils.toByteArray(fileInputStream);
         fileInputStream.close();
@@ -365,8 +366,7 @@ public class Main {
 
         File file1 = new File(String.format(rootPath.concat("%s.txt"), 0));
 
-        /* Binary file */
-        Files.write(Paths.get(file1.toURI()), encryptedBytes);
+        Files.write(Paths.get(file1.toURI()), encryptedBytes);*/
 
         /* Now, you can take file from classes folder */
         System.out.println();
