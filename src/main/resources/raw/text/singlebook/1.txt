@@ -655,7 +655,7 @@ Remember to not use RESOURCE_LOCAL (a resource-local entity manager) as it uses 
 • Bitronix JTA Transaction Manager (www.docs.codehaus.org/display/BTM/Home) org.hibernate.service.jta.platform.internal.BitronixJtaPlatform
 • Borland Enterprise Server 6.0 (www.techpubs.borland.com/am/bes/v6/) org.hibernate.service.jta.platform.internal.BorlandEnterpriseServerJtaPlatform
 • JBoss Transactions (standalone JTA transaction manager known to work with org.jboss.jbossts:jbossjta:4.9.0.GA; not for use with Jboss AS 7) (www.jboss.org/jbosstm) org.hibernate.service.jta.platform.internal.JBossStandAloneJtaPlatform
-• JOnAS OSGi Enterprise Server (OW2) (www.jonas.ow2.org/xwiki/bin/view/Main/) org.hibernate.service.jta.platform.internal.JOnASJtaPlatform
+• JOnAS OSGi Enterprise Server (OW2) (www.jonas.ow2.org/xwiki/bin/view/application.Main/) org.hibernate.service.jta.platform.internal.JOnASJtaPlatform
 1 In  April  2013  Red  Hat,  Inc.  announced  that  the  next  generation  of  JBoss  Application  Server  would  be  known  as  Wildfly.  See
 http://gb.redhat.com/about/news/press-archive/2013/4/red-hat-reveals-plans-for-its-next-generation-java- application-server-project.
  42
@@ -12865,7 +12865,7 @@ Remember to not use RESOURCE_LOCAL (a resource-local entity manager) as it uses 
 • Bitronix JTA Transaction Manager (www.docs.codehaus.org/display/BTM/Home) org.hibernate.service.jta.platform.internal.BitronixJtaPlatform
 • Borland Enterprise Server 6.0 (www.techpubs.borland.com/am/bes/v6/) org.hibernate.service.jta.platform.internal.BorlandEnterpriseServerJtaPlatform
 • JBoss Transactions (standalone JTA transaction manager known to work with org.jboss.jbossts:jbossjta:4.9.0.GA; not for use with Jboss AS 7) (www.jboss.org/jbosstm) org.hibernate.service.jta.platform.internal.JBossStandAloneJtaPlatform
-• JOnAS OSGi Enterprise Server (OW2) (www.jonas.ow2.org/xwiki/bin/view/Main/) org.hibernate.service.jta.platform.internal.JOnASJtaPlatform
+• JOnAS OSGi Enterprise Server (OW2) (www.jonas.ow2.org/xwiki/bin/view/application.Main/) org.hibernate.service.jta.platform.internal.JOnASJtaPlatform
 1 In  April  2013  Red  Hat,  Inc.  announced  that  the  next  generation  of  JBoss  Application  Server  would  be  known  as  Wildfly.  See
 http://gb.redhat.com/about/news/press-archive/2013/4/red-hat-reveals-plans-for-its-next-generation-java- application-server-project.
  42

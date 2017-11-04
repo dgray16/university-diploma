@@ -54,4 +54,24 @@ public class EncryptionHelper {
         return desCipher.doFinal(plainText);
     }
 
+    @SneakyThrows
+    public static byte[] aesToBytes(byte[] key, byte[] plainText) {
+        SecretKey secretKey = new SecretKeySpec(key, "AES");
+
+        Cipher desCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        desCipher.init(Cipher.ENCRYPT_MODE, secretKey);
+
+        return desCipher.doFinal(plainText);
+    }
+
+    @SneakyThrows
+    public static byte[] blowfishToBytes(byte[] key, byte[] plainText) {
+        SecretKey secretKey = new SecretKeySpec(key, "Blowfish");
+
+        Cipher desCipher = Cipher.getInstance("Blowfish/CBC/PKCS5Padding");
+        desCipher.init(Cipher.ENCRYPT_MODE, secretKey);
+
+        return desCipher.doFinal(plainText);
+    }
+
 }
