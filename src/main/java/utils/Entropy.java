@@ -8,11 +8,13 @@ import org.apache.commons.lang3.StringUtils;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Spliterator;
 import java.util.stream.Collectors;
 
 import static java.lang.Math.log;
@@ -124,10 +126,21 @@ public class Entropy {
         Map<Integer, Integer> frequency = new HashMap<>();
         alphabet.forEach(letter -> frequency.putAll(createMap(letter, 0)));
 
-        cipherText.forEach(letter -> {
+        /* 10 sec parallel stream with 2 - 12 MB */
+        /* 25 sec with 95 MB */
+        cipherText.parallelStream().forEach(letter -> {
+            synchronized (frequency) {
+                Integer value = frequency.get(letter);
+                frequency.put(letter, value + 1);
+            }
+        });
+
+        /* 5 sec with 2 - 12 MB */
+        /* 32 sec with 95 MB */
+        /*cipherText.forEach(letter -> {
             Integer value = frequency.get(letter);
             frequency.put(letter, value + 1);
-        });
+        });*/
 
         return frequency;
     }
@@ -149,7 +162,7 @@ public class Entropy {
         Double result = 0D;
 
         for (Double pValue : pValues) {
-            result += pValue * (log(pValue) / log(2));
+            result += logBaseTwo(pValue);
         }
 
         return -result;
@@ -165,7 +178,7 @@ public class Entropy {
 
         for (Double pValue : pValues) {
             /* Shannon`s formula */
-            result += pValue * ( log(pValue) / log(2) );
+            result += logBaseTen(pValue);
         }
 
         return -result;
@@ -173,6 +186,14 @@ public class Entropy {
         /* 9MB  file - (result: -0.09375, pValue: 0.015625, log: -6.0000, pValues: 64) */
         /* 2MB  file - (result: -0.09375, pValue: 0.015625, log: -6.0000, pValues: 64) */
         /* 1MB  file - (result: -0.09265, pValue: 0.015384, log: -6.0223, pValues: 65) */
+    }
+
+    private double logBaseTwo(Double pValue) {
+        return pValue * ( log(pValue) / log(2D) );
+    }
+
+    private double logBaseTen(Double pValue) {
+        return pValue * ( (log(pValue) / log(10D)) / (log(2D) / log(10D)) );
     }
 
     private Double calculatePValue(Integer value, Integer length) {

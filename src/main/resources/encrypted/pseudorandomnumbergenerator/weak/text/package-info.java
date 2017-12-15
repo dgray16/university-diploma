@@ -9,5 +9,10 @@
  *     Twobooks package means that to build nested files, two books were used.
  *     It must increase entropy difference between files  with different sizes.
  * </p>
+ *
+ * <p>
+ *     Source package has a single file, that contains bad sequence.
+ *     This sequence is used to salt plainttext for weak pseudorandomgenerator test.
+ * </p>
  */
 package resources.pseudorandomnumbergenerator.weak.text

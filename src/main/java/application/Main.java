@@ -19,11 +19,12 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.SecureRandom;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 
 import static java.util.stream.Collectors.joining;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.apache.commons.lang3.math.NumberUtils.INTEGER_ONE;
+import static org.apache.commons.lang3.math.NumberUtils.INTEGER_ZERO;
 
 /**
  * AES Workflow:
@@ -43,67 +44,6 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
  *     <li>http://www.binaryhexconverter.com/decimal-to-binary-converter</li>
  * </ul>
  *
- Test text data:
-
- 20:56:13.832 [main] INFO  application.Main - File size: 96 bytes
- 20:56:13.861 [main] INFO  application.Main - DES-pure ( H = 5.514192 )
- 20:56:13.873 [main] INFO  application.Main - DES-ideal ( H = 5.727921 )
- 20:56:13.873 [main] INFO  application.Main - DES-ideal - DES-pure = 5.727921 - 5.514192 = 0.213729
-
-
- 20:56:14.015 [main] INFO  application.Main - File size: 1 MB
- 20:56:17.520 [main] INFO  application.Main - DES-pure ( H = 5.999995 )
- 20:56:20.011 [main] INFO  application.Main - DES-ideal ( H = 6.022368 )
- 20:56:20.011 [main] INFO  application.Main - DES-ideal - DES-pure = 6.022368 - 5.999995 = 0.022373
-
-
- 20:56:20.031 [main] INFO  application.Main - File size: 2 MB
- 20:56:24.005 [main] INFO  application.Main - DES-pure ( H = 5.999984 )
- 20:56:30.234 [main] INFO  application.Main - DES-ideal ( H = 6.000000 )
- 20:56:30.234 [main] INFO  application.Main - DES-ideal - DES-pure = 6.000000 - 5.999984 = 0.000016
-
-
- 20:56:30.270 [main] INFO  application.Main - File size: 3 MB
- 20:56:36.472 [main] INFO  application.Main - DES-pure ( H = 6.000001 )
- 20:56:45.714 [main] INFO  application.Main - DES-ideal ( H = 6.022368 )
- 20:56:45.714 [main] INFO  application.Main - DES-ideal - DES-pure = 6.022368 - 6.000001 = 0.022367
-
-
- 20:56:45.744 [main] INFO  application.Main - File size: 5 MB
- 20:56:54.178 [main] INFO  application.Main - DES-pure ( H = 5.999998 )
- 20:57:09.162 [main] INFO  application.Main - DES-ideal ( H = 6.022368 )
- 20:57:09.162 [main] INFO  application.Main - DES-ideal - DES-pure = 6.022368 - 5.999998 = 0.022370
-
-
- 20:57:09.219 [main] INFO  application.Main - File size: 6 MB
- 20:57:20.637 [main] INFO  application.Main - DES-pure ( H = 6.000001 )
- 20:57:36.319 [main] INFO  application.Main - DES-ideal ( H = 6.022368 )
- 20:57:36.319 [main] INFO  application.Main - DES-ideal - DES-pure = 6.022368 - 6.000001 = 0.022367
-
-
- 20:57:36.439 [main] INFO  application.Main - File size: 7 MB
- 20:57:54.154 [main] INFO  application.Main - DES-pure ( H = 5.999999 )
- 20:58:14.442 [main] INFO  application.Main - DES-ideal ( H = 6.022368 )
- 20:58:14.442 [main] INFO  application.Main - DES-ideal - DES-pure = 6.022368 - 5.999999 = 0.022369
-
-
- 20:58:14.495 [main] INFO  application.Main - File size: 9 MB
- 20:58:35.374 [main] INFO  application.Main - DES-pure ( H = 5.999997 )
- 20:59:05.190 [main] INFO  application.Main - DES-ideal ( H = 6.000000 )
- 20:59:05.190 [main] INFO  application.Main - DES-ideal - DES-pure = 6.000000 - 5.999997 = 0.000003
-
-
- 20:59:05.258 [main] INFO  application.Main - File size: 10 MB
- 20:59:24.531 [main] INFO  application.Main - DES-pure ( H = 5.999999 )
- 20:59:53.765 [main] INFO  application.Main - DES-ideal ( H = 6.022368 )
- 20:59:53.765 [main] INFO  application.Main - DES-ideal - DES-pure = 6.022368 - 5.999999 = 0.022369
-
-
- 20:59:53.826 [main] INFO  application.Main - File size: 12 MB
- 21:00:14.047 [main] INFO  application.Main - DES-pure ( H = 5.999998 )
- 21:00:52.550 [main] INFO  application.Main - DES-ideal ( H = 6.000000 )
- 21:00:52.550 [main] INFO  application.Main - DES-ideal - DES-pure = 6.000000 - 5.999998 = 0.000002
-
  * File sizes:
  * <ul>
  *     <li>1 MB</li>
@@ -132,9 +72,7 @@ public class Main {
 
 
     public static void main(String[] args) {
-        // weakPseudorandomNumberGenerator();
-        // strongPseudorandomNumberGenerator();
-        // encrypt();
+        //encrypt();
 
         /*List<File> files = fileProcessor.getFiles(dictionary.Cipher.DES.getPath().concat(dictionary.TestType.TEXT_DOUBLE.getType()));
         files.forEach(file -> {
@@ -148,17 +86,18 @@ public class Main {
     }
 
     private static void runTextTest() {
-        // createBinaryTest(Cipher.DES, TestType.TEST);
-        //createBinaryTest(Cipher.AES, TestType.TEST);
-        //createBinaryTest(Cipher.BLOWFISH, TestType.TEST);
+        createBinaryTest(Cipher.DES, TestType.TEXT_DOUBLE);
+        //createBinaryTest(Cipher.AES, TestType.TEXT_DOUBLE);
+        //createBinaryTest(Cipher.BLOWFISH, TestType.TEXT_DOUBLE);
+        //createBinaryTest(Cipher.RAW, TestType.TEST);
 
-        createBinaryTest(Cipher.XOR_WEAK, TestType.TEXT_DOUBLE);
+        //createBinaryTest(Cipher.XOR_WEAK, TestType.TEXT_DOUBLE);
         //createBinaryTest(Cipher.XOR_STRONG, TestType.TEXT_DOUBLE);
 
         // createTestWithoutIdeal(Cipher.RAW, TestType.TEST);
 
-        //weakPseudorandomNumberGenerator(Cipher.DES, TestType.TEXT_DOUBLE);
-        // strongPseudorandomNumberGenerator(Cipher.DES, TestType.TEXT_DOUBLE);
+        //weakPseudorandomNumberGenerator(Cipher.RAW, TestType.TEXT_DOUBLE);
+        //strongPseudorandomNumberGenerator(Cipher.RAW, TestType.TEXT_DOUBLE);
     }
 
     private static void runAudioTest() {
@@ -179,27 +118,30 @@ public class Main {
     @SneakyThrows
     private static void weakPseudorandomNumberGenerator(Cipher cipher, TestType fileType) {
         List<File> files = fileProcessor.getFiles(cipher.getPath().concat(fileType.getType()));
-        Random randomValue = new Random(1L);
 
-        for (int i = 1; i <= files.size(); i++) {
-            Integer index = i - 1;
+        File weakPseudorandom = fileProcessor.getFile(Cipher.RAW.getPath().concat(TestType.TEST.getType()).concat("0.txt"));
+        byte[] randomBytes = fileProcessor.getBytesFromBinaryFile(weakPseudorandom);
+
+        for (int i = INTEGER_ONE; i <= files.size(); i++) {
+            Integer index = i - INTEGER_ONE;
 
             File file = files.get(index);
             FileInputStream fileInputStream = new FileInputStream(file);
             byte[] encryptedText = IOUtils.toByteArray(fileInputStream);
 
-            byte[] randomBytes = new byte[encryptedText.length];
-            randomValue.nextBytes(randomBytes);
+            if (randomBytes.length < encryptedText.length) {
+                throw new RuntimeException("There are less random bytes than incoming text, this case is not handled");
+            }
 
             byte[] xoredBytes = new byte[encryptedText.length];
 
-            for (int iterator = 0; iterator < encryptedText.length; iterator++) {
+            for (int iterator = INTEGER_ZERO; iterator < encryptedText.length; iterator++) {
                 xoredBytes[iterator] = (byte) (encryptedText[iterator] ^ randomBytes[iterator]);
             }
 
             String rootPath = Main.class.getResource("/encrypted/").getPath().toString();
             File file1 = new File(rootPath.concat(String.format("%s.txt", i)));
-            /* Binary file */
+
             Files.write(Paths.get(file1.toURI()), xoredBytes);
         }
     }
@@ -353,8 +295,8 @@ public class Main {
 
     @SneakyThrows
     private static void encrypt() {
-        List<File> files = fileProcessor.getFiles("/raw/text/test/");
-        String rootPath = Main.class.getResource("/encrypted/des/").getPath().toString();
+        List<File> files = fileProcessor.getFiles("/raw/text/twobooks/");
+        String rootPath = Main.class.getResource("/encrypted/").getPath().toString();
 
         for (int i = 1; i <= files.size(); i++) {
             Integer index = i - 1;
@@ -363,9 +305,10 @@ public class Main {
             byte[] bytes = IOUtils.toByteArray(fileInputStream);
             fileInputStream.close();
 
-            // KeyGenerator keyGenerator = KeyGenerator.getInstance("DES");
-            // KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
-            KeyGenerator keyGenerator = KeyGenerator.getInstance("Blowfish");
+            /* Do not forget to change ecryption method below! */
+            //KeyGenerator keyGenerator = KeyGenerator.getInstance(Cipher.DES.getJavaCipherNotation());
+            //KeyGenerator keyGenerator = KeyGenerator.getInstance(Cipher.AES.getJavaCipherNotation());
+            KeyGenerator keyGenerator = KeyGenerator.getInstance(Cipher.BLOWFISH.getJavaCipherNotation());
 
             byte[] generatedKey = keyGenerator.generateKey().getEncoded();
             byte[] encryptedBytes = EncryptionHelper.blowfishToBytes(generatedKey, bytes);
