@@ -130,6 +130,7 @@ public class Entropy {
         /* 25 sec with 95 MB */
         cipherText.parallelStream().forEach(letter -> {
             synchronized (frequency) {
+                /* TODO how about to do 'value' as mutex instead of 'frequency' ? */
                 Integer value = frequency.get(letter);
                 frequency.put(letter, value + 1);
             }
